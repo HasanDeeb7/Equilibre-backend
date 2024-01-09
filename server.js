@@ -2,8 +2,8 @@ import express from "express";
 import "dotenv/config";
 import cors from "cors";
 import cookieParser from "cookie-parser";
-import dbconnect from "./config/db.js";
-
+import dbconnect from "./src/config/db.js";
+import { userRoutes } from "./src/routes/userRouter.js";
 const app = express();
 const port = process.env.PORT;
 app.use(express.json());
@@ -18,6 +18,9 @@ app.use(
 app.use(cookieParser());
 app.use(express.static("public"));
 dbconnect();
+
+app.use("/user", userRoutes);
+
 app.listen(port, () => {
   console.log(`Server is listenning on port ${port}`);
 });
