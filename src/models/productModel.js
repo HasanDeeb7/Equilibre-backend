@@ -23,7 +23,6 @@ const productSchema = new Schema({
     isDeleted: {
         type: Boolean,
         default: false,
-        required: true
     },
     slug: {
         type: String,
@@ -37,14 +36,8 @@ const productSchema = new Schema({
         type: mongoose.Schema.Types.ObjectId,
         ref: 'Category',
     },
-    sizeId: {
-        type: mongoose.Schema.Types.ObjectId,
-        ref: 'Size',
-    },
-    offerId: {
-        type: mongoose.Schema.Types.ObjectId,
-        ref: 'Offer',
-    }
+    sizes: [{ type: mongoose.Schema.Types.ObjectId, ref: "Size" }],
+    offers:[{ type: mongoose.Schema.Types.ObjectId, ref: "Offer" }]
 
 })
 

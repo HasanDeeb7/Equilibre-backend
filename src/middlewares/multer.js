@@ -7,7 +7,7 @@ const storage = multer.diskStorage({
   // @param {Object}   The uploaded file.
   // @param {function} cb - The callback function to specify the destination folder.
   destination: function (req, file, cb) {
-    cb(null, "public/images/");
+    cb(null, "assets/images/");
   },
   //   @param {Object}  request object.
   //   @param {Object}  The uploaded file.
