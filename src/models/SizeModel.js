@@ -6,7 +6,7 @@ const sizeSchema = new Schema({
         required: true
     },
     unit: {
-        type: string,
+        type: String,
         enum: ['ml', 'g'],
         required: true
     },
