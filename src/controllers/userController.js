@@ -160,6 +160,9 @@ const getUsers = async (req, res) => {
 
 async function updateUser(req, res) {
   const user = req.body;
+  if (req.body.security) {
+    delete user.security;
+  }
 
   try {
     const found = await User.findOne({ _id: user.id });
@@ -174,7 +177,12 @@ async function updateUser(req, res) {
       const hashedPass = await bcrypt.hash(user.password, 10);
       user.password = hashedPass;
     }
-    await User.findOneAndUpdate({ _id: user.id }, { ...user });
+    req.body.security
+      ? await User.findOneAndUpdate(
+          { _id: user.id },
+          { ...user, passwordUpdatedAt: Date.now() }
+        )
+      : await User.findOneAndUpdate({ _id: user.id }, { ...user });
 
     return res.status(200).json({ message: "Updated Successfully" });
   } catch (err) {
@@ -213,3 +221,7 @@ async function getOneUser(req, res) {
   }
 }
 export { getUsers, addNewUser, updateUser, deleteUser, getOneUser };
+
+// 2024-01-14T15:46:19.846Z
+// 2024-01-14T15:46:19.846+00:00
+// 2024-01-14T15:46:19.846+00:00
