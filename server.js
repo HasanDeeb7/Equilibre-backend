@@ -5,6 +5,8 @@ import cookieParser from "cookie-parser";
 import dbconnect from "./src/config/db.js";
 import { userRoutes } from "./src/routes/userRouter.js";
 import categoryRoutes from "./src/routes/categoriesRouter.js";
+import {offerRoutes} from './src/routes/globaloffer.js'
+
 const app = express();
 const port = process.env.PORT;
 app.use(express.json());
@@ -22,6 +24,7 @@ dbconnect();
 
 app.use("/user", userRoutes);
 app.use("/category", categoryRoutes);
+app.use("/globalOffer",offerRoutes)
 
 app.listen(port, () => {
   console.log(`Server is listenning on port ${port}`);
