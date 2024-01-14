@@ -50,4 +50,32 @@ const deleteOffer = async (req, res) => {
 }
 
 
-export { addOffer,deleteOffer } 
+const getOffers = async (req, res) => {
+    try {
+        const offers = await Offer.find()
+        res.status(200).json({ data: offers })
+
+    } catch (error) {
+        console.log(error)
+        res.status(500).json(error)
+    }
+}
+
+
+const getOffer = async (req, res) => {
+    const offerId=req.body.offerId
+    try {
+        const offer = await Offer.findById(offerId)
+        if(!offer){
+       return res.status(404).json({message:"No offer found"})
+
+        }
+        res.status(200).json({ data:offer})
+
+    } catch (error) {
+        console.log(error)
+        res.status(500).json(error)
+    }
+}
+
+export { addOffer,deleteOffer,getOffer,getOffers } 

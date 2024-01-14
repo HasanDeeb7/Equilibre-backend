@@ -55,4 +55,33 @@ const deleteSize = async (req, res) => {
 }
 
 
-export { addSize, deleteSize }
+const getSizes = async (req, res) => {
+    try {
+        const sizes = await Size.find()
+        res.status(200).json({ data: sizes })
+
+    } catch (error) {
+        console.log(error)
+        res.status(500).json(error)
+    }
+}
+
+
+const getSize = async (req, res) => {
+    const sizeId=req.body.sizeId
+    try {
+        const size = await Size.findById(sizeId)
+        if(!size){
+       return res.status(404).json({message:"No size found"})
+
+        }
+        res.status(200).json({ data:size})
+
+    } catch (error) {
+        console.log(error)
+        res.status(500).json(error)
+    }
+}
+
+
+export { addSize, deleteSize ,getSizes,getSize}

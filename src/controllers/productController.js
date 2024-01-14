@@ -56,22 +56,26 @@ const deleteProduct = async (req, res) => {
     try {
         const product = await Product.findById(productId)
 
-       if(product) {//remove the id of product from the offer docs
-        if(product.offers && product.offers.length > 0){await Promise.all(product.offers.map(async (offerId) => {
-            await Offer.findByIdAndUpdate(offerId, { $pull: { products: productId } })
-        }
-        ))}
+        if (product) {//remove the id of product from the offer docs
+            if (product.offers && product.offers.length > 0) {
+                await Promise.all(product.offers.map(async (offerId) => {
+                    await Offer.findByIdAndUpdate(offerId, { $pull: { products: productId } })
+                }
+                ))
+            }
 
-        //delete sizes related to this product
-      if(product.sizes && product.sizes.length > 0){  await Promise.all(product.sizes.map(async (sizeId) => {
-            await Size.findByIdAndDelete(sizeId)
-        }
+            //delete sizes related to this product
+            if (product.sizes && product.sizes.length > 0) {
+                await Promise.all(product.sizes.map(async (sizeId) => {
+                    await Size.findByIdAndDelete(sizeId)
+                }
 
-        ))}
-        await Product.findByIdAndDelete(productId)
+                ))
+            }
+            await Product.findByIdAndDelete(productId)
 
-        return res.status(200).json({message:`"${product.name}" product had been deleted succ`})
-    }else{return  res.status(404).json({message:`no such a product with this id`})}
+            return res.status(200).json({ message: `"${product.name}" product had been deleted succ` })
+        } else { return res.status(404).json({ message: `no such a product with this id` }) }
 
 
     } catch (error) {
@@ -82,5 +86,32 @@ const deleteProduct = async (req, res) => {
 }
 
 
+const getProducts = async (req, res) => {
+    try {
+        const products = await Product.find()
+        res.status(200).json({ data: products })
 
-export { AddProduct,deleteProduct }
+    } catch (error) {
+        console.log(error)
+        res.status(500).json(error)
+    }
+}
+
+
+const getProduct = async (req, res) => {
+    const productId=req.body.productId
+    try {
+        const product = await Product.findById(productId)
+        if(!product){
+       return res.status(404).json({message:"No product found"})
+
+        }
+        res.status(200).json({ data:product})
+
+    } catch (error) {
+        console.log(error)
+        res.status(500).json(error)
+    }
+}
+
+export { AddProduct, deleteProduct,getProducts ,getProduct}
