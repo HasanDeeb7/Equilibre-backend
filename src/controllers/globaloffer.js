@@ -3,8 +3,8 @@ import mongoose from "mongoose";
 
 const createOffer = async (req, res) => {
   try {
-    const { startDate, endDate, rate } = req.body;
-    if (!startDate || !endDate || !rate) {
+    const { startDate, endDate, rate, description } = req.body;
+    if (!startDate || !endDate || !rate || !description) {
       return res.status(400).json({
         error:
           "Incomplete data. Please provide start Date, end Date, and the rate of the offer.",
@@ -14,6 +14,7 @@ const createOffer = async (req, res) => {
       startDate: new Date(startDate),
       endDate: new Date(endDate),
       rate: parseFloat(rate),
+      description:description
     });
     res.status(200).json(offer);
   } catch (error) {
@@ -67,11 +68,11 @@ const getOneOffer = async (req, res) => {
 
 const updateOffer = async (req, res) => {
   try {
-    const { id, startDate, endDate, rate } = req.body;
+    const { id, startDate, endDate, rate,description } = req.body;
     if (!mongoose.Types.ObjectId.isValid(id)) {
       return response.status(404).json({ error: "no such offer" });
     }
-    if (!startDate && !endDate && !rate) {
+    if (!startDate && !endDate && !rate && !description) {
       return res.status(400).json({
         error:
           "No update data provided. Please provide start Date, end Date, or rate.",
@@ -83,6 +84,7 @@ const updateOffer = async (req, res) => {
         startDate: startDate ? new Date(startDate) : undefined,
         endDate: endDate ? new Date(endDate) : undefined,
         rate: rate ? parseFloat(rate) : undefined,
+        description: description? description : undefined
       },
       { new: true }
     );
