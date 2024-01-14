@@ -47,6 +47,12 @@ const userSchema = new mongoose.Schema({
     type: String,
     enum: ["Male", "Female"],
   },
+  age: {
+    type: Number,
+    min: 18,
+    max: 78,
+    required: true,
+  },
 });
 
 export default model("User", userSchema);
