@@ -4,6 +4,7 @@ import cors from "cors";
 import cookieParser from "cookie-parser";
 import dbconnect from "./src/config/db.js";
 import { userRoutes } from "./src/routes/userRouter.js";
+import { orderRoutes } from "./src/routes/orderRouter.js";
 const app = express();
 const port = process.env.PORT;
 app.use(express.json());
@@ -20,6 +21,7 @@ app.use(express.static("public"));
 dbconnect();
 
 app.use("/user", userRoutes);
+app.use("/order", orderRoutes);
 
 app.listen(port, () => {
   console.log(`Server is listenning on port ${port}`);
