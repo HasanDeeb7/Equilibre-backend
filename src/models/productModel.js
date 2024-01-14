@@ -39,6 +39,9 @@ const productSchema = new Schema({
     sizes: [{ type: mongoose.Schema.Types.ObjectId, ref: "Size" }],
     offers:[{ type: mongoose.Schema.Types.ObjectId, ref: "Offer" }]
 
-})
+},
+{
+    timestamps: true
+  })
 
 export default model('Product', productSchema)

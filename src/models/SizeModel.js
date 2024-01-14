@@ -20,7 +20,10 @@ const sizeSchema = new Schema({
         ref: 'Product'
     }
 
-})
+},
+{
+    timestamps: true
+  })
 
 
 export default model('Size', sizeSchema)

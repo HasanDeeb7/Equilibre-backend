@@ -5,6 +5,10 @@ import cookieParser from "cookie-parser";
 import dbconnect from "./src/config/db.js";
 import { userRoutes } from "./src/routes/userRouter.js";
 import { productRoutes } from "./src/routes/productRouter.js";
+import { sizeRoutes } from "./src/routes/sizeRouter.js";
+import { offerRoutes } from "./src/routes/offerRouter.js";
+
+
 
 const app = express();
 const port = process.env.PORT;
@@ -23,6 +27,10 @@ dbconnect();
 
 app.use("/user", userRoutes);
 app.use("/product", productRoutes);
+app.use("/product", sizeRoutes);
+app.use("/product", offerRoutes);
+
+
 
 
 app.listen(port, () => {
