@@ -12,10 +12,6 @@ const productSchema = new Schema({
     nutritionalInfo: {
         type: String,
     },
-    price: {
-        type: Number,
-        required: true
-    },
     image: {
         type: String,
         required: true

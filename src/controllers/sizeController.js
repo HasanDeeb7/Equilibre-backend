@@ -3,6 +3,7 @@ import Product from '../models/productModel.js'
 const addSize = async (req, res) => {
 
     const { capacity, unit, stock, productId } = req.body
+    const price = parseInt(req.body.price)
     let productName;
     if (!capacity || !unit || !stock || !productId) {
         res.status(400).json({ message: "all field are required" })
@@ -27,7 +28,7 @@ const addSize = async (req, res) => {
 
 
     try {
-        const addedSize = await Size.create({ capacity, unit, stock, productId })
+        const addedSize = await Size.create({ capacity, unit, stock, price, productId })
         await Product.findByIdAndUpdate(productId, { $push: { sizes: addedSize._id } })
         res.status(200).json({ message: `size added succ to ${productName}`, data: addedSize })
     } catch (error) {
@@ -36,5 +37,22 @@ const addSize = async (req, res) => {
     }
 }
 
+const deleteSize = async (req, res) => {
+    const sizeId = req.body.sizeId
+    try {
+        const size = await Size.findById(sizeId)
+        if (!size) {
+            return req.status(404).json({ message: "there is no size with this id" })
+        }
 
-export { addSize }
+        await Product.findByIdAndUpdate(size.productId, { $pull: { sizes: sizeId } })
+        await Size.findOneAndDelete(sizeId)
+        return res.status(200).json({ message: "size deleted succ" })
+    } catch (error) {
+        console.log(error)
+        res.status(500).json(error)
+    }
+}
+
+
+export { addSize, deleteSize }

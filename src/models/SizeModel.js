@@ -15,6 +15,10 @@ const sizeSchema = new Schema({
         required: true,
         default: 0
     },
+    price: {
+        type: Number,
+        required: true
+    },
     productId: {
         type: mongoose.Schema.Types.ObjectId,
         ref: 'Product'

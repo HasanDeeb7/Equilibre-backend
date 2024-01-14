@@ -28,4 +28,26 @@ const addOffer = async (req, res) => {
 
 }
 
-export { addOffer } 
+const deleteOffer = async (req, res) => {
+    const offerId = req.body.offerId
+    try {
+        const offer = await Offer.findById(offerId)
+        if (!offer) {
+            return req.status(404).json({ message: "there is no offer with this id" })
+        }
+
+        if(offer.products && offer.products.length > 0){
+            await Promise.all(offer.products.map(async (productId) => {
+            await Product.findByIdAndUpdate(productId, { $pull: { offers: offerId } })
+        }
+        ))}
+        await Offer.findOneAndDelete(offerId)
+        return res.status(200).json({ message: "offer deleted succ" })
+    } catch (error) {
+        console.log(error)
+        res.status(500).json(error)
+    }
+}
+
+
+export { addOffer,deleteOffer } 
