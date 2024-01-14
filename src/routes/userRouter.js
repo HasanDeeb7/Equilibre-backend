@@ -11,7 +11,7 @@ import {
 export const userRoutes = Router();
 
 userRoutes.post("/signup", addNewUser);
-userRoutes.post("/signin", signIn);
+userRoutes.post("/login", signIn);
 userRoutes.get("/", getUsers);
 userRoutes.get("/one", getOneUser);
 userRoutes.delete("/delete", deleteUser);

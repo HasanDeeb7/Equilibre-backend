@@ -3,6 +3,7 @@ import User from "../models/userModel.js";
 import bcrypt from "bcrypt";
 import "dotenv/config";
 import jwt from "jsonwebtoken";
+import mongoose from "mongoose";
 function removeImage(image) {
   fs.unlinkSync(`public/images/${image}`, (err) => {
     if (err) {
@@ -14,26 +15,46 @@ function removeImage(image) {
 }
 
 export const signIn = async (req, res) => {
+  try {
+    const token = req.cookies?.access_token;
+    if (token) {
+      const decoded = jwt.verify(token, process.env.JWT_SECRET);
+      if (decoded) {
+        // const id = new mongoose.Types.ObjectId(decoded.id);
+        const user = await User.findOne({
+          _id: decoded.id,
+        });
+        if (user) {
+          return res.json(user);
+        }
+      }
+    }
+  } catch (error) {
+    console.log(error);
+  }
   const { email, password, username } = req.body;
+  if ([username, password].some((item) => item === "")) {
+    return res.status(400).json({ error: "All Fields are Required!" });
+  }
   let user;
   try {
     user = await User.findOne({ email: email });
     if (!user) {
       user = await User.findOne({ username: username });
       if (!user) {
-        return res.status(404).json({ message: "User doesn't exist!" });
+        return res.status(404).json({ error: "User doesn't exist!" });
       }
     }
 
     const validPass = await bcrypt.compare(password, user.password);
     if (!validPass) {
-      return res.status(500).json({ message: "Wrong Password" });
+      return res.status(500).json({ error: "Wrong Password" });
     }
 
     const token = jwt.sign(
       {
         id: user._id,
-        role: user.role,
+        isAdmin: user.isAdmin,
         lastName: user.lastName,
         firstName: user.firstName,
       },
@@ -51,7 +72,7 @@ export const signIn = async (req, res) => {
       .json(user);
   } catch (error) {
     console.log(error);
-    res.status(500).json({ message: "Error Sign In" });
+    res.status(500).json({ error: "Error Sign In" });
   }
 };
 
