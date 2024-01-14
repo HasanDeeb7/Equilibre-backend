@@ -83,5 +83,15 @@ const getSize = async (req, res) => {
     }
 }
 
-
-export { addSize, deleteSize ,getSizes,getSize}
+const editSize = async (req, res) => {
+    const {sizeId,capacity, unit, stock} = req.body
+    try {
+        await Size.findByIdAndUpdate(sizeId, {capacity, unit, stock})
+        const updatedSize = await Size.findById(sizeId)
+        res.status(200).json({ message: "Size Info edited succ", data: updatedSize })
+    } catch (error) {
+        console.log(error)
+        return res.status(500).json(error)
+    }
+}
+export { addSize, deleteSize ,getSizes,getSize,editSize}

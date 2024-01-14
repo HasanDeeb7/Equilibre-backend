@@ -78,4 +78,16 @@ const getOffer = async (req, res) => {
     }
 }
 
-export { addOffer,deleteOffer,getOffer,getOffers } 
+const editOffer = async (req, res) => {
+    const {offerId,discountRate, startDate, endDate} = req.body
+    try {
+        await Offer.findByIdAndUpdate(offerId, {discountRate, startDate, endDate})
+        const updatedOffer = await Offer.findById(offerId)
+        res.status(200).json({ message: "Offer Info edited succ", data: updatedOffer })
+    } catch (error) {
+        console.log(error)
+        return res.status(500).json(error)
+    }
+}
+
+export { addOffer,deleteOffer,getOffer,getOffers,editOffer } 

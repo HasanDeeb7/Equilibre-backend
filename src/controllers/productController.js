@@ -99,14 +99,14 @@ const getProducts = async (req, res) => {
 
 
 const getProduct = async (req, res) => {
-    const productId=req.body.productId
+    const productId = req.body.productId
     try {
         const product = await Product.findById(productId)
-        if(!product){
-       return res.status(404).json({message:"No product found"})
+        if (!product) {
+            return res.status(404).json({ message: "No product found" })
 
         }
-        res.status(200).json({ data:product})
+        res.status(200).json({ data: product })
 
     } catch (error) {
         console.log(error)
@@ -114,4 +114,38 @@ const getProduct = async (req, res) => {
     }
 }
 
-export { AddProduct, deleteProduct,getProducts ,getProduct}
+
+
+const editProduct = async (req, res) => {
+    const {
+        productId,
+        name,
+        description,
+        nutritionalInfo,
+        slug,
+        isDeleted,
+        soldQuantityCounter,
+        categoryId } = req.body
+
+        const image = req.file.path;
+
+    try {
+        await Product.findByIdAndUpdate(productId, {
+            name,
+            description,
+            nutritionalInfo,
+            image,
+            slug,
+            isDeleted,
+            soldQuantityCounter,
+            categoryId
+        })
+        const updatedproduct = await Product.findById(productId)
+        res.status(200).json({ message: "product Info edited succ", data: updatedproduct })
+    } catch (error) {
+        console.log(error)
+        return res.status(500).json(error)
+    }
+}
+
+export { AddProduct, deleteProduct, getProducts, getProduct ,editProduct}
