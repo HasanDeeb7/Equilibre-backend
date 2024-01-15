@@ -1,34 +1,42 @@
 import Offer from "../models/offerModel.js";
 import Product from "../models/productModel.js";
 import Size from "../models/SizeModel.js";
+import Category from "../models/categoriesModel.js";
+import slugify from "slugify";
 
 const AddProduct = async (req, res) => {
     const {
         name,
         description,
         nutritionalInfo,
-        slug,
         isDeleted,
         soldQuantityCounter,
-        categoryId,
+        categoryName,
         sizes,
         offers
 
     } = req.body
 
-    if (!req.file) {
-        return res.status(400).json({ error: "No file uploaded" });
-    }
-
-    const image = req.file.path;
-    // if (categoryName) {
-    //     try {
-    //         const categoryId = await Category.findOne({ where: { name: categoryName } })
-    //     } catch (error) {
-    //         console.log(error)
-    //         res.status(500).json(error)
-    //     }
+    // if (!req.file) {
+    //     return res.status(400).json({ error: "No file uploaded" });
     // }
+
+    // const image = req.file.path;
+    const image = "hhhhhhhhhhh";
+
+    const slug = slugify(name, { lower: true, replacement: '-' })
+    let categoryId;
+
+    if (categoryName) {
+        try {
+
+            const category = await Category.findOne({ name: categoryName })
+            categoryId = category._id
+        } catch (error) {
+            console.log(error)
+            return res.status(500).json(error)
+        }
+    }
     try {
         const newProduct = await Product.create({
             name,
@@ -43,16 +51,15 @@ const AddProduct = async (req, res) => {
             offers
         })
 
-        res.status(200).json({ message: 'product added succ', data: newProduct })
+        return res.status(200).json({ message: 'product added succ', data: newProduct })
     } catch (error) {
-        res.status(500).json(error)
+        return res.status(500).json(error)
     }
 }
 
 const deleteProduct = async (req, res) => {
 
     const productId = req.body.productId;
-    console.log(productId)
     try {
         const product = await Product.findById(productId)
 
@@ -64,15 +71,15 @@ const deleteProduct = async (req, res) => {
                 ))
             }
 
-            //delete sizes related to this product
-            if (product.sizes && product.sizes.length > 0) {
-                await Promise.all(product.sizes.map(async (sizeId) => {
-                    await Size.findByIdAndDelete(sizeId)
-                }
+            // //delete sizes related to this product
+            // if (product.sizes && product.sizes.length > 0) {
+            //     await Promise.all(product.sizes.map(async (sizeId) => {
+            //         await Size.findByIdAndDelete(sizeId)
+            //     }
 
-                ))
-            }
-            await Product.findByIdAndDelete(productId)
+            //     ))
+            // }
+            await Product.findByIdAndUpdate(productId,{isDeleted:true})
 
             return res.status(200).json({ message: `"${product.name}" product had been deleted succ` })
         } else { return res.status(404).json({ message: `no such a product with this id` }) }
@@ -122,12 +129,13 @@ const editProduct = async (req, res) => {
         name,
         description,
         nutritionalInfo,
-        slug,
         isDeleted,
         soldQuantityCounter,
         categoryId } = req.body
 
-        const image = req.file.path;
+    const image = req.file.path;
+    let slug;
+    if (name) { slug = slugify(name, { lower: true, replacement: '-' }) }
 
     try {
         await Product.findByIdAndUpdate(productId, {
@@ -148,4 +156,4 @@ const editProduct = async (req, res) => {
     }
 }
 
-export { AddProduct, deleteProduct, getProducts, getProduct ,editProduct}
+export { AddProduct, deleteProduct, getProducts, getProduct, editProduct }

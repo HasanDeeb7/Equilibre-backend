@@ -4,12 +4,11 @@ import cors from "cors";
 import cookieParser from "cookie-parser";
 import dbconnect from "./src/config/db.js";
 import { userRoutes } from "./src/routes/userRouter.js";
+import categoryRoutes from "./src/routes/categoriesRouter.js";
+import {globalofferRoutes} from './src/routes/globaloffer.js'
 import { productRoutes } from "./src/routes/productRouter.js";
 import { sizeRoutes } from "./src/routes/sizeRouter.js";
-import { offerRoutes } from "./src/routes/offerRouter.js";
-
-
-
+import { offerRoutes } from "./src/routes/offerRouter.js"
 const app = express();
 const port = process.env.PORT;
 app.use(express.json());
@@ -26,11 +25,11 @@ app.use(express.static("public"));
 dbconnect();
 
 app.use("/user", userRoutes);
+app.use("/category", categoryRoutes);
+app.use("/globalOffer",offerRoutes)
 app.use("/product", productRoutes);
 app.use("/product", sizeRoutes);
 app.use("/product", offerRoutes);
-
-
 
 
 app.listen(port, () => {
