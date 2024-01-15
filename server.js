@@ -6,6 +6,7 @@ import dbconnect from "./src/config/db.js";
 import { userRoutes } from "./src/routes/userRouter.js";
 import categoryRoutes from "./src/routes/categoriesRouter.js";
 import {offerRoutes} from './src/routes/globaloffer.js'
+import { testomonialsRoutes } from "./src/routes/testimonialsRouter.js";
 
 const app = express();
 const port = process.env.PORT;
@@ -25,6 +26,7 @@ dbconnect();
 app.use("/user", userRoutes);
 app.use("/category", categoryRoutes);
 app.use("/globalOffer",offerRoutes)
+app.use("/testimonial",testomonialsRoutes)
 
 app.listen(port, () => {
   console.log(`Server is listenning on port ${port}`);

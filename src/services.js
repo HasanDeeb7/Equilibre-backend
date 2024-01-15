@@ -1,7 +1,8 @@
 import { DeleteObjectCommand } from "@aws-sdk/client-s3";
 import { s3 } from "./config/ s3Config.js";
 
-async function deleteImage(bucketName, url) {
+async function deleteImage(url) {
+  const bucketName = "equilibre"
   const urlParts = url.split("/");
 
   // Get the last part (filename) of the URL
@@ -18,8 +19,8 @@ async function deleteImage(bucketName, url) {
     const command = new DeleteObjectCommand(params);
     const result = await s3.send(command);
 
-    // Log or handle the success result
-    console.log("Object deleted successfully:", result);
+    // // Log or handle the success result
+    // console.log("Object deleted successfully:", result);
     return result;
   } catch (error) {
     // Log or handle the error
