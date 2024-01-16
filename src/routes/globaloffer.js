@@ -3,10 +3,10 @@ import { createOffer, deleteOffer, updateOffer,getOneOffer,getOffers } from "../
 import { isAdmin } from "../middlewares/authenticate.js";
 import {uploadImage} from '../middlewares/multer.js'
 
-export const offerRoutes = Router();
+export const globalofferRoutes = Router();
 
-offerRoutes.post("/create",uploadImage.single('image'), createOffer);
-offerRoutes.get("/", getOffers);
-offerRoutes.get("/one", getOneOffer);
-offerRoutes.delete("/delete", deleteOffer);
-offerRoutes.patch("/update",uploadImage.single('image'), updateOffer);
+globalofferRoutes.post("/create",uploadImage.single('image'), createOffer);
+globalofferRoutes.get("/", getOffers);
+globalofferRoutes.get("/one", getOneOffer);
+globalofferRoutes.delete("/delete", deleteOffer);
+globalofferRoutes.patch("/update",uploadImage.single('image'), updateOffer);
