@@ -9,4 +9,4 @@ offerRoutes.post("/create",uploadImage.single('image'), createOffer);
 offerRoutes.get("/", getOffers);
 offerRoutes.get("/one", getOneOffer);
 offerRoutes.delete("/delete", deleteOffer);
-offerRoutes.patch("/update",uploadImage('image'), updateOffer);
+offerRoutes.patch("/update",uploadImage.single('image'), updateOffer);

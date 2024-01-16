@@ -13,12 +13,10 @@ async function deleteImage(url) {
     Bucket: bucketName,
     Key: objectKey,
   };
-
   try {
     // Delete the object from the S3 bucket
     const command = new DeleteObjectCommand(params);
     const result = await s3.send(command);
-
     // // Log or handle the success result
     // console.log("Object deleted successfully:", result);
     return result;

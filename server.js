@@ -26,7 +26,6 @@ dbconnect();
 app.use("/user", userRoutes);
 app.use("/category", categoryRoutes);
 app.use("/globalOffer",offerRoutes)
-app.use("/testimonial",testomonialsRoutes)
 
 app.listen(port, () => {
   console.log(`Server is listenning on port ${port}`);

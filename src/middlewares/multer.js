@@ -17,7 +17,8 @@ const s3Storage = multerS3({
   key: (req, file, cb) => {
     const fileName =
       Date.now() + "_" + file.fieldname + "_" + file.originalname;
-    cb(null, fileName);
+      const sanitizedFileName = fileName.replace(/\s+/g, '_'); // Replace spaces with underscores
+  cb(null, sanitizedFileName);
   },
 });
 
