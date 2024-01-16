@@ -88,6 +88,7 @@ async function addNewUser(req, res) {
   }
 
   try {
+    console.log(req.body);
     if (
       !user.firstName ||
       !user.lastName ||
@@ -96,7 +97,7 @@ async function addNewUser(req, res) {
       !user.email ||
       !user.phone
     ) {
-      return res.status(400).json({ error: "missing required property" });
+      return res.status(400).json({ message: "missing required property" });
     } else {
       let passExpression = /^(?=.*\d)(?=.*[a-z])(?=.*[A-Z]).{6,20}$/;
       let userNameExpression = /^[a-zA-Z][a-zA-Z0-9]{5,11}$/;

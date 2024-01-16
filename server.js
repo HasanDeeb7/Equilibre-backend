@@ -11,6 +11,7 @@ import { sizeRoutes } from "./src/routes/sizeRouter.js";
 import { offerRoutes } from "./src/routes/offerRouter.js"
 import { testomonialsRoutes } from "./src/routes/testimonialsRouter.js";
 import orderRouter from './src/routes/orderRouter.js'
+import { consultationRouter } from "./src/routes/consultationRouter.js";
 const app = express();
 const port = process.env.PORT;
 app.use(express.json());
@@ -34,6 +35,7 @@ app.use("/product", sizeRoutes);
 app.use("/product", offerRoutes);
 app.use("/order", orderRouter);
 app.use("/testimonial", testomonialsRoutes);
+app.use("/consultation", consultationRouter);
 
 app.listen(port, () => {
   console.log(`Server is listenning on port ${port}`);
