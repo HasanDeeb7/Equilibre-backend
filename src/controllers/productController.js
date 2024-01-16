@@ -17,13 +17,11 @@ const AddProduct = async (req, res) => {
 
     } = req.body
 
-    // if (!req.file) {
-    //     return res.status(400).json({ error: "No file uploaded" });
-    // }
+    if (!req.file) {
+        return res.status(400).json({ message: "No image uploaded" });
+    }
 
-    // const image = req.file.path;
-    const image = "hhhhhhhhhhh";
-
+    const image = req.file.location;
     const slug = slugify(name, { lower: true, replacement: '-' })
     let categoryId;
 
@@ -74,19 +72,11 @@ const deleteProduct = async (req, res) => {
 
         if (product) {
             //remove the id of product from the offer docs
-            if (product.offerId ) {
-                    await Offer.findByIdAndUpdate(product.offerId , { $pull: { products: productId } })
+            if (product.offerId) {
+                await Offer.findByIdAndUpdate(product.offerId, { $pull: { products: productId } })
             }
 
-            // //delete sizes related to this product
-            // if (product.sizes && product.sizes.length > 0) {
-            //     await Promise.all(product.sizes.map(async (sizeId) => {
-            //         await Size.findByIdAndDelete(sizeId)
-            //     }
-
-            //     ))
-            // }
-            await Product.findByIdAndUpdate(productId,{isDeleted:true})
+            await Product.findByIdAndUpdate(productId, { isDeleted: true })
 
             return res.status(200).json({ message: `"${product.name}" product had been deleted succ` })
         } else { return res.status(404).json({ message: `no such a product with this id` }) }
@@ -140,7 +130,10 @@ const editProduct = async (req, res) => {
         soldQuantityCounter,
         categoryName } = req.body
 
-    const image = req.file.path;
+    if (!req.file) {
+        return res.status(400).json({ message: "No image uploaded" });
+    }
+    const image = req.file.location;
     let slug;
     if (name) { slug = slugify(name, { lower: true, replacement: '-' }) }
     let categoryId;

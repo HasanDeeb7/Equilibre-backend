@@ -102,7 +102,10 @@ const updateOffer = async (req, res) => {
     if (!offer) {
       return res.status(404).json({ error: "no such offer" });
     }
-    deleteImage(oldOffer.image)
+    if(req.file){
+      deleteImage(oldOffer.image)
+    }
+    
     res.status(200).json("Offer updated successfully");
   } catch (error) {
     if(req.file){

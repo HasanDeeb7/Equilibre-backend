@@ -80,7 +80,9 @@ const updateTestimonial = async (req, res) => {
     if (!testimonial) {
       return res.status(404).json({ error: "no such testimonial" });
     }
-    deleteImage(oldTestimonial.image)
+    if(req.file){
+      deleteImage(oldTestimonial.image)
+    }
     res.status(200).json("testimonial updated successfully");
   } catch (error) {
     if(req.file){
