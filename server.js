@@ -10,6 +10,7 @@ import { productRoutes } from "./src/routes/productRouter.js";
 import { sizeRoutes } from "./src/routes/sizeRouter.js";
 import { offerRoutes } from "./src/routes/offerRouter.js"
 import { testomonialsRoutes } from "./src/routes/testimonialsRouter.js";
+import orderRouter from './src/routes/orderRouter.js'
 const app = express();
 const port = process.env.PORT;
 app.use(express.json());
