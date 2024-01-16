@@ -13,7 +13,7 @@ const AddProduct = async (req, res) => {
         soldQuantityCounter,
         categoryName,
         sizes,
-        offers
+        offerId
 
     } = req.body
 
@@ -37,7 +37,16 @@ const AddProduct = async (req, res) => {
             return res.status(500).json(error)
         }
     }
+
+
     try {
+        // Check if a product with the same name already exists
+        const existingProduct = await Product.findOne({ name });
+
+        if (existingProduct) {
+            return res.status(400).json({ message: "Product with this name already exists" });
+        }
+
         const newProduct = await Product.create({
             name,
             description,
@@ -48,7 +57,7 @@ const AddProduct = async (req, res) => {
             soldQuantityCounter,
             categoryId,
             sizes,
-            offers
+            offerId
         })
 
         return res.status(200).json({ message: 'product added succ', data: newProduct })
@@ -63,12 +72,10 @@ const deleteProduct = async (req, res) => {
     try {
         const product = await Product.findById(productId)
 
-        if (product) {//remove the id of product from the offer docs
-            if (product.offers && product.offers.length > 0) {
-                await Promise.all(product.offers.map(async (offerId) => {
-                    await Offer.findByIdAndUpdate(offerId, { $pull: { products: productId } })
-                }
-                ))
+        if (product) {
+            //remove the id of product from the offer docs
+            if (product.offerId ) {
+                    await Offer.findByIdAndUpdate(product.offerId , { $pull: { products: productId } })
             }
 
             // //delete sizes related to this product
@@ -131,12 +138,23 @@ const editProduct = async (req, res) => {
         nutritionalInfo,
         isDeleted,
         soldQuantityCounter,
-        categoryId } = req.body
+        categoryName } = req.body
 
     const image = req.file.path;
     let slug;
     if (name) { slug = slugify(name, { lower: true, replacement: '-' }) }
+    let categoryId;
 
+    if (categoryName) {
+        try {
+
+            const category = await Category.findOne({ name: categoryName })
+            categoryId = category._id
+        } catch (error) {
+            console.log(error)
+            return res.status(500).json(error)
+        }
+    }
     try {
         await Product.findByIdAndUpdate(productId, {
             name,

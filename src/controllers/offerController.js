@@ -14,7 +14,7 @@ const addOffer = async (req, res) => {
             const product = await Product.findOne({ name: productName });
 
             if (product) {
-                await Product.findByIdAndUpdate(product._id, { $push: { offers: addedOffer._id } });
+                await Product.findByIdAndUpdate(product._id, {offerId: addedOffer._id });
                 await Offer.findByIdAndUpdate(addedOffer._id, { $push: { products: product._id } });
             }
 
@@ -38,7 +38,7 @@ const deleteOffer = async (req, res) => {
 
         if(offer.products && offer.products.length > 0){
             await Promise.all(offer.products.map(async (productId) => {
-            await Product.findByIdAndUpdate(productId, { $pull: { offers: offerId } })
+            await Product.findByIdAndUpdate(productId,{ offerId: offerId })
         }
         ))}
         await Offer.findOneAndDelete(offerId)

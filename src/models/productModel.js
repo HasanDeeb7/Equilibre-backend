@@ -4,7 +4,8 @@ const productSchema = new Schema({
 
     name: {
         type: String,
-        required: true
+        required: true,
+        unique:true
     },
     description: {
         type: String,
@@ -33,7 +34,7 @@ const productSchema = new Schema({
         ref: 'Category',
     },
     sizes: [{ type: mongoose.Schema.Types.ObjectId, ref: "Size" }],
-    offers:[{ type: mongoose.Schema.Types.ObjectId, ref: "Offer" }]
+    offerId:{ type: mongoose.Schema.Types.ObjectId, ref: "Offer" }
 
 },
 {
