@@ -3,6 +3,7 @@ import User from "../models/userModel.js";
 import bcrypt from "bcrypt";
 import "dotenv/config";
 import jwt from "jsonwebtoken";
+import { error } from "console";
 function removeImage(image) {
   fs.unlinkSync(`public/images/${image}`, (err) => {
     if (err) {

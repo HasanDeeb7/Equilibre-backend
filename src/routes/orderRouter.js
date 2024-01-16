@@ -1,18 +1,15 @@
-import { Router } from "express";
+import express from "express";
+const orderRouter = express.Router();
 import {
-    addNewOrder,
-    deleteOrder,
-    getOneOrder,
-    getOrders,
-    updateOrder,
+    addOrder,
+    getAllOrders
+} from "../controllers/orderController.js";
 
-} from "../controllers/userController.js";
 
-export const userRoutes = Router();
+orderRouter.post("/addNewOrder", addOrder);
+orderRouter.get("/getallorders", getAllOrders);
+// userRoutes.get("/one/:id", getOneOrder);
+// userRoutes.delete("/delete", deleteOrder);
+// userRoutes.patch("/update", updateOrder);
 
-userRoutes.post("/addNewOrder", addNewOrder);
-userRoutes.get("/getOrders", getOrders);
-userRoutes.get("/one/:id", getOneOrder);
-userRoutes.delete("/delete", deleteOrder);
-userRoutes.patch("/update",     updateOrder,
-);
+export default orderRouter

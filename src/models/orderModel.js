@@ -1,16 +1,16 @@
 import mongoose from "mongoose";
 
-const { Schema, model } = mongoose;
+const Schema = mongoose.Schema;
 
-const orderSchema = new mongoose.Schema({
+const orderSchema = new Schema({
     shippingAddress: {
         type: String,
         required: true,
     },
     status: {
         type: String,
-        enum: ["delivered", "completed", "pending", "cancelled", "confirmed"],
-        default: "pending",
+        enum: ["processing", "on-way", "completed", "cancelled"],
+        default: "processing",
         required: true,
     },
     totalAmount: {
@@ -34,9 +34,31 @@ const orderSchema = new mongoose.Schema({
         type: Date,
         required: true,
     },
-    isAdmin: {
-        type: Boolean,
-        default: false,
+    city: {
+        type: String,
+                required: true,
+
+        // enum: [
+        //     "Beirut",
+        //     "Tripoli",
+        //     "Sidon-Saida",
+        //     "Sour",
+        //     "Byblos-Jbeil",
+        //     "Jounieh",
+        //     "Baalbek",
+        //     "Zahle",
+        //     "Nabatieh",
+        //     "Anjar",
+        //     "Bint-Jbeil",
+        //     "Batroun",
+        //     "AleyChouf-Beiteddine",
+        //     "Hermel"
+        // ],
+    },
+    country: {
+        type: String,
+        required: true,
+
     },
     userId: [{
         type: mongoose.Schema.Types.ObjectId,
@@ -51,5 +73,7 @@ const orderSchema = new mongoose.Schema({
     }],
 
 });
+const order = mongoose.model('Order', orderSchema)
 
-export default model("Order", orderSchema);
+
+export default order;
