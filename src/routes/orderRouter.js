@@ -12,7 +12,7 @@ import {
 orderRouter.post("/addNewOrder", addOrder);
 orderRouter.get("/getallorders", getAllOrders);
 orderRouter.get("/one/:id", getOneOrderById);
-orderRouter.delete("/delete", deleteOrder);
+orderRouter.delete("/delete/:id", deleteOrder);
 orderRouter.patch("/update", updateOrder);
 
 export default orderRouter

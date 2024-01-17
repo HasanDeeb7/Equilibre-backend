@@ -19,8 +19,8 @@ const orderSchema = new Schema({
     },
     orderDate: {
         type: Date,
-        required: true,
-        unique: true,
+        default: new Date(),
+        required:false
     },
     deliveryFee: {
         type: Number,
@@ -28,15 +28,15 @@ const orderSchema = new Schema({
     },
     isFreeDelivery: {
         type: Boolean,
-        required: true
+        required: true,
+        default: false
     },
     deliveryDate: {
         type: Date,
-        required: true,
     },
     city: {
         type: String,
-                required: true,
+        required: true,
 
         // enum: [
         //     "Beirut",
@@ -70,6 +70,11 @@ const orderSchema = new Schema({
             ref: "Product"
         },
         quantity: Number,
+        size:{
+            type: mongoose.Schema.Types.ObjectId,
+            ref: "Size",
+            required:true 
+        }
     }],
 
 });
