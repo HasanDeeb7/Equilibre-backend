@@ -1,23 +1,13 @@
-import express from 'express';
-import {
-  getTotalProductsSold,
-  getTotalOrders,
-  getTotalIncome,
-  getSalesByCategory,
-  getTotalOrdersByAdress,
-  getTopSellerProduct,
-  getOverviewSales
-} from './statisticsRouter.js'
+import { Router } from "express";
+import {getTotalOrders,getSalesByCategory,getTotalProductsSold,getTotalIncome,getTotalOrdersByAdress,getOverviewSales,getTopSellerProduct} from '../controllers/statisticsController.js'
 
-const router = express.Router();
+export const statisticsRoutes = Router();
 
 
-router.get('/total-products-sold', getTotalProductsSold);
-router.get('/total-orders', getTotalOrders);
-router.get('/total-income', getTotalIncome);
-router.get('/sales-overview',getOverviewSales );
-router.get('/top-seller-product',getTopSellerProduct);
-router.get('/sales-by-category',getSalesByCategory);
-router.get('/orders-by-address', getTotalOrdersByAdress);
-
-export default router;
+statisticsRoutes.get('/total-products-sold', getTotalProductsSold);
+statisticsRoutes.get('/total-orders', getTotalOrders);
+statisticsRoutes.get('/total-income', getTotalIncome);
+statisticsRoutes.get('/sales-overview',getOverviewSales );
+statisticsRoutes.get('/top-seller-product',getTopSellerProduct);
+statisticsRoutes.get('/sales-by-category',getSalesByCategory);
+statisticsRoutes.get('/orders-by-address', getTotalOrdersByAdress);
