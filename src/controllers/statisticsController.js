@@ -65,10 +65,8 @@ const getTotalOrders=async (req, res) => {
 
   const getSalesByCategory=async (req, res) => {
     try {
-      // Fetch all categories
       const categories = await Category.find();
-  
-      // map on categories
+ 
       const salesByCategory = await Promise.all(categories.map(async (category) => {
         const products = await Product.find({ _id: { $in: category.products } });
   
@@ -94,8 +92,9 @@ const getTotalOrders=async (req, res) => {
 
   const getTotalOrdersByAdress=async (req, res) => {
     try {
+      const allOrders=await Order.countDocuments();
       const ordersByAddress = await Order.aggregate([
-        { $match: { country: "Lebanon", city: { $ne: null } } },
+        { $match: { country: "lebanon", city: { $ne: null } } },
         { $group: { _id: "$city", totalOrders: { $sum: 1 } } },
         { $sort: { totalOrders: -1 } },
         { $limit: 5 },
@@ -104,7 +103,17 @@ const getTotalOrders=async (req, res) => {
           $project: {
             _id: 0,
             ordersByAddress: {
-              $concatArrays: ["$topCities", [{ city: "Others", totalOrders: { $sum: "$topCities.totalOrders" } }]],
+              $concatArrays: [
+                "$topCities",
+                [
+                  {
+                    city: "Others",
+                    totalOrders: {
+                      $subtract: [allOrders, { $sum: "$topCities.totalOrders" }],
+                    },
+                  },
+                ],
+              ],
             },
           },
         },
@@ -126,14 +135,13 @@ const getTotalOrders=async (req, res) => {
   const getOverviewSales = async (req, res) => {
     try {
       const currentDate = new Date();
-      const currentMonth = currentDate.getMonth() + 1; // Month is zero-based
   
       const result = await Order.aggregate([
         {
           $match: {
-            createdAt: {
-              $gte: new Date(currentDate.getFullYear(), currentMonth - 1, 1), // Start of the current month
-              $lt: new Date(currentDate.getFullYear(), currentMonth, 1), // Start of the next month
+            orderDate: {
+              $gte: new Date(currentDate.getFullYear() - 1, currentDate.getMonth(), 1), // Start of the month, 12 months ago
+              $lt: new Date(currentDate.getFullYear(), currentDate.getMonth() + 1, 1), // Start of the current month
             },
           },
         },
@@ -142,25 +150,17 @@ const getTotalOrders=async (req, res) => {
         },
         {
           $group: {
-            _id: '$products.product',
+            _id: {
+              month: { $month: '$orderDate' },
+            },
             totalQuantity: { $sum: '$products.quantity' },
           },
         },
         {
-          $lookup: {
-            from: 'products', // Update with the correct collection name for products
-            localField: '_id',
-            foreignField: '_id',
-            as: 'productInfo',
-          },
-        },
-        {
-          $unwind: '$productInfo',
-        },
-        {
           $project: {
-            productName: '$productInfo.name',
+            month: '$_id.month',
             totalQuantity: 1,
+            _id: 0,
           },
         },
       ]);
@@ -171,15 +171,16 @@ const getTotalOrders=async (req, res) => {
       res.status(500).json({ error: 'Internal Server Error' });
     }
   };
-
+  
   const getTopSellerProduct = async (req, res) => {
     try {
-      const topSellerProduct = await Product.findOne({})
-        .sort('-soldQuantityCounter') 
-        .select('name soldQuantityCounter') // Select only the necessary fields to be returned
+      const topSellerProducts = await Product.find({})
+        .sort({ soldQuantityCounter: -1 })
+        .limit(5)
+        .select('name soldQuantityCounter');
   
-      if (topSellerProduct) {
-        res.status(200).json({ topSellerProduct });
+      if (topSellerProducts.length > 0) {
+        res.status(200).json({ topSellerProducts });
       } else {
         res.status(404).json({ message: 'No products found' });
       }
