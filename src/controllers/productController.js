@@ -5,76 +5,77 @@ import Category from "../models/categoriesModel.js";
 import slugify from "slugify";
 
 const AddProduct = async (req, res) => {
-    const {
+  const {
+    name,
+    description,
+    nutritionalInfo,
+    isDeleted,
+    soldQuantityCounter,
+    categoryName,
+    sizes,
+    offerId,
+  } = req.body;
+
+  if (!req.file) {
+    return res.status(400).json({ message: "No image uploaded" });
+  }
+
+  const image = req.file.location;
+  const slug = slugify(name, { lower: true, replacement: "-" });
+  let categoryId;
+
+  try {
+    // Check if a product with the same name already exists
+    const existingProduct = await Product.findOne({ name });
+
+    if (existingProduct) {
+      return res
+        .status(400)
+        .json({ message: "Product with this name already exists" });
+    }
+
+    // Create a new product
+    const newProduct = await Product.create({
       name,
       description,
       nutritionalInfo,
+      image,
+      slug,
       isDeleted,
       soldQuantityCounter,
-      categoryName,
+      categoryId,
       sizes,
-      offerId
-    } = req.body;
-  
-    if (!req.file) {
-      return res.status(400).json({ message: "No image uploaded" });
-    }
-  
-    const image = req.file.location;
-    const slug = slugify(name, { lower: true, replacement: '-' });
-    let categoryId;
-  
-    try {
-      // Check if a product with the same name already exists
-      const existingProduct = await Product.findOne({ name });
-  
-      if (existingProduct) {
-        return res.status(400).json({ message: "Product with this name already exists" });
-      }
-  
-      // Create a new product
-      const newProduct = await Product.create({
-        name,
-        description,
-        nutritionalInfo,
-        image,
-        slug,
-        isDeleted,
-        soldQuantityCounter,
-        categoryId,
-        sizes,
-        offerId
-      });
-  
-    
-      if (categoryName) {
-        try {
-          const category = await Category.findOne({ name: categoryName });
-  
-          if (category) {
-            categoryId = category._id;
-  
-            await Category.findOneAndUpdate(
-              { name: categoryName },
-              { $push: { products: newProduct._id } }
-            );
-          } else {
-            return res.status(404).json({ message: "Category not found" });
-          }
-  
-        } catch (error) {
-          console.log(error);
-          return res.status(500).json(error);
+      offerId,
+    });
+
+    if (categoryName) {
+      try {
+        const category = await Category.findOne({ name: categoryName });
+
+        if (category) {
+          categoryId = category._id;
+
+          await Category.findOneAndUpdate(
+            { name: categoryName },
+            { $push: { products: newProduct._id } }
+          );
+        } else {
+          return res.status(404).json({ message: "Category not found" });
         }
+      } catch (error) {
+        console.log(error);
+        return res.status(500).json(error);
       }
-  
-      return res.status(200).json({ message: 'Product added successfully', data: newProduct });
-    } catch (error) {
-      console.error(error);
-      return res.status(500).json(error);
     }
-  };
-  
+
+    return res
+      .status(200)
+      .json({ message: "Product added successfully", data: newProduct });
+  } catch (error) {
+    console.error(error);
+    return res.status(500).json(error);
+  }
+};
 
 const deleteProduct = async (req, res) => {
   const productId = req.body.productId;
@@ -118,7 +119,10 @@ const getProducts = async (req, res) => {
 const getProduct = async (req, res) => {
   const productId = req.query.productId;
   try {
-    const product = await Product.findById(productId).populate('sizes');
+    const product = await Product.findById(productId).populate([
+      "sizes",
+      "offerId",
+    ]);
     if (!product) {
       return res.status(404).json({ message: "No product found" });
     }
