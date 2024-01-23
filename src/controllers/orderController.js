@@ -22,8 +22,8 @@ const updateSizeStock = async (products, increment) => {
 
 
 export const addOrder = async (req, res) => {
-    const { shippingAddress, status, city, country, totalAmount, deliveryDate, products } = req.body;
-    const {userId,email}=req.user;
+    const { shippingAddress, status, city, country, totalAmount, deliveryDate, products ,email} = req.body;
+    const {userId}=req.user;
     let deliveryFee, isFreeDelivery;
 
     if (totalAmount >= 50) {
@@ -55,7 +55,7 @@ export const addOrder = async (req, res) => {
         // Update product counter and sizes
         await updateProductQuantities(products, 1);
         await updateSizeStock(products, -1);
-        sendingOrderBYMail(email,newOrder._id)
+        if(newOrder)sendingOrderBYMail(email,newOrder._id)
         return res.status(201).json({ message: 'Order created successfully', data: newOrder });
     } catch (error) {
         console.log(error);

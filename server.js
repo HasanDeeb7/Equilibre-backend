@@ -38,6 +38,10 @@ app.use("/order", orderRouter);
 app.use("/testimonial", testomonialsRoutes);
 app.use("/consultation", consultationRouter);
 app.use("/statistics", statisticsRoutes);
+app.get('/user/logout', (req, res)=>{
+  res.clearCookie('access_token')
+  return res.json({message : 'Logged Out!'})
+})
 
 
 app.listen(port, () => {
