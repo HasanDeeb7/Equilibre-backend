@@ -2,7 +2,7 @@ import Order from "../models/orderModel.js"
 import Product from "../models/productModel.js"
 import Size from "../models/SizeModel.js"
 import { sendingOrderBYMail } from "./mailsController.js";
-
+import DeliveryDetails from "../models/deliveryDetails.js";
 
 //function to update product counter
 const updateProductQuantities = async (products, increment) => {
@@ -22,19 +22,23 @@ const updateSizeStock = async (products, increment) => {
 
 
 export const addOrder = async (req, res) => {
-    const { shippingAddress, status, city, country, totalAmount, deliveryDate, products } = req.body;
-    const {userId,email}=req.user;
+  const deliveryDetails=await DeliveryDetails.find();
+  console.log(deliveryDetails[0])
+    const { shippingAddress, status, city, country, totalAmount, deliveryDate, products ,email,userId,orderDate} = req.body;
+    // const userId=req.user.id;
     let deliveryFee, isFreeDelivery;
 
-    if (totalAmount >= 50) {
+    if (totalAmount >= (deliveryDetails[0].FreeDeliveryAmount)) {
         isFreeDelivery = true;
         deliveryFee = 0;
-    } else {
-        deliveryFee = 3;
+    } else  {
+        if(country==='lebanon'){
+        deliveryFee = deliveryDetails[0].inLebanonDeliveryFee;}
+        // else deliveryFee=null
     }
 
     // Check for required fields
-    if (!shippingAddress || !totalAmount || !city || !country || !products || products.length === 0) {
+    if (!shippingAddress || !totalAmount  || !country || !products || products.length === 0) {
         return res.status(400).json({ message: "Missing required field" });
     }
 
@@ -49,13 +53,14 @@ export const addOrder = async (req, res) => {
             deliveryFee,
             isFreeDelivery,
             userId,
+            orderDate,
             products,
         });
 
         // Update product counter and sizes
         await updateProductQuantities(products, 1);
         await updateSizeStock(products, -1);
-        sendingOrderBYMail(email,newOrder._id)
+        if(newOrder)sendingOrderBYMail(email,newOrder._id)
         return res.status(201).json({ message: 'Order created successfully', data: newOrder });
     } catch (error) {
         console.log(error);

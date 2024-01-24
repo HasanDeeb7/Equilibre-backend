@@ -24,7 +24,7 @@ const orderSchema = new Schema({
     },
     deliveryFee: {
         type: Number,
-        required: true,
+        required: false,
     },
     isFreeDelivery: {
         type: Boolean,
@@ -36,24 +36,6 @@ const orderSchema = new Schema({
     },
     city: {
         type: String,
-        required: true,
-
-        // enum: [
-        //     "Beirut",
-        //     "Tripoli",
-        //     "Sidon-Saida",
-        //     "Sour",
-        //     "Byblos-Jbeil",
-        //     "Jounieh",
-        //     "Baalbek",
-        //     "Zahle",
-        //     "Nabatieh",
-        //     "Anjar",
-        //     "Bint-Jbeil",
-        //     "Batroun",
-        //     "AleyChouf-Beiteddine",
-        //     "Hermel"
-        // ],
     },
     country: {
         type: String,
