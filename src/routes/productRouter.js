@@ -7,6 +7,8 @@ import {
   getProduct,
   editProduct,
   getProductsByCategory,
+  searchByProductName,
+  filterProducts
 } from "../controllers/productController.js";
 
 export const productRoutes = Router();
@@ -14,6 +16,8 @@ export const productRoutes = Router();
 productRoutes.post("/addProduct", uploadImage.single("image"), AddProduct);
 productRoutes.delete("/deleteProduct", deleteProduct);
 productRoutes.get("/AllProducts", getProducts);
+productRoutes.post("/search", searchByProductName);
+productRoutes.post("/filter", filterProducts);
 productRoutes.get("/byId/:slug", getProduct);
 productRoutes.get("/byCategory", getProductsByCategory);
 productRoutes.patch("/edit", uploadImage.single("image"), editProduct);
