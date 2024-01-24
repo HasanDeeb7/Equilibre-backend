@@ -22,8 +22,8 @@ const updateSizeStock = async (products, increment) => {
 
 
 export const addOrder = async (req, res) => {
-    const { shippingAddress, status, city, country, totalAmount, deliveryDate, products ,email} = req.body;
-    const {userId}=req.user;
+    const { shippingAddress, status, city, country, totalAmount, deliveryDate, products ,email,userId,orderDate} = req.body;
+    // const userId=req.user.id;
     let deliveryFee, isFreeDelivery;
 
     if (totalAmount >= 50) {
@@ -34,7 +34,7 @@ export const addOrder = async (req, res) => {
     }
 
     // Check for required fields
-    if (!shippingAddress || !totalAmount || !city || !country || !products || products.length === 0) {
+    if (!shippingAddress || !totalAmount  || !country || !products || products.length === 0) {
         return res.status(400).json({ message: "Missing required field" });
     }
 
@@ -49,6 +49,7 @@ export const addOrder = async (req, res) => {
             deliveryFee,
             isFreeDelivery,
             userId,
+            orderDate,
             products,
         });
 

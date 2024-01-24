@@ -13,6 +13,8 @@ import { testomonialsRoutes } from "./src/routes/testimonialsRouter.js";
 import orderRouter from './src/routes/orderRouter.js'
 import { consultationRouter } from "./src/routes/consultationRouter.js";
 import {statisticsRoutes} from './src/routes/statisticsRouter.js'
+import {detailsDeliveryRoutes} from './src/routes/detailsSizeRouter.js'
+
 const app = express();
 const port = process.env.PORT;
 app.use(express.json());
@@ -31,6 +33,7 @@ dbconnect();
 app.use("/user", userRoutes);
 app.use("/category", categoryRoutes);
 app.use("/globalOffer",globalofferRoutes)
+app.use("/deliveryDetails",detailsDeliveryRoutes)
 app.use("/product", productRoutes);
 app.use("/product", sizeRoutes);
 app.use("/product", offerRoutes);
