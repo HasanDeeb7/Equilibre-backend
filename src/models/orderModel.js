@@ -24,7 +24,7 @@ const orderSchema = new Schema({
     },
     deliveryFee: {
         type: Number,
-        required: true,
+        required: false,
     },
     isFreeDelivery: {
         type: Boolean,

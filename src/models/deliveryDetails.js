@@ -5,7 +5,7 @@ inLebanonDeliveryFee:{
     type:Number,
 },
 FreeDeliveryAmount:{
-    type:Date,
+    type:Number,
     required:true
 },
 },

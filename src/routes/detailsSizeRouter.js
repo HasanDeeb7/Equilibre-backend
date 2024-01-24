@@ -5,4 +5,4 @@ export const detailsDeliveryRoutes = Router();
 detailsDeliveryRoutes.post("/create",createDelveryDetails);
 detailsDeliveryRoutes.get("/", getdeliveryDetails);
 detailsDeliveryRoutes.delete("/delete/:id", deleteDeliveryDetails);
-detailsDeliveryRoutes.patch("/update':id",updateDeliveryDetails);
+detailsDeliveryRoutes.patch("/update/:id",updateDeliveryDetails);
