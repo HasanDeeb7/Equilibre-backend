@@ -118,9 +118,10 @@ const getProducts = async (req, res) => {
 };
 
 const getProduct = async (req, res) => {
-  const productId = req.query.productId;
+  const slug = req.params.slug;
+  
   try {
-    const product = await Product.findById(productId).populate([
+    const product = await Product.findOne({ slug }).populate([
       "sizes",
       "offerId",
     ]);
