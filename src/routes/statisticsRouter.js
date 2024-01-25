@@ -1,5 +1,5 @@
 import { Router } from "express";
-import {getTotalOrders,getSalesByCategory,getTotalProductsSold,getTotalIncome,getTotalOrdersByAdress,getOverviewSales,getTopSellerProduct} from '../controllers/statisticsController.js'
+import {getTotalOrders,getSalesByCategory,getTotalProductsSold,getTotalIncome,getTotalOrdersByAdress,getOverviewSales,getTopSellerProduct,getTotalUsers} from '../controllers/statisticsController.js'
 
 export const statisticsRoutes = Router();
 
@@ -11,3 +11,5 @@ statisticsRoutes.get('/sales-overview',getOverviewSales );
 statisticsRoutes.get('/top-seller-product',getTopSellerProduct);
 statisticsRoutes.get('/sales-by-category',getSalesByCategory);
 statisticsRoutes.get('/orders-by-address', getTotalOrdersByAdress);
+statisticsRoutes.get('/total-user', getTotalUsers);
+

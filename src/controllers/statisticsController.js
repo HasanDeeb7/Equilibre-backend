@@ -1,7 +1,7 @@
 import Category from "../models/categoriesModel.js";
 import Product from "../models/productModel.js";
 import Order from "../models/orderModel.js";
-
+import User from '../models/userModel.js'
 
 
 
@@ -41,7 +41,17 @@ const getTotalOrders=async (req, res) => {
     }
   };
   
-
+  const getTotalUsers=async (req, res) => {
+    try {
+ 
+      const totalUsers = await User.countDocuments();
+      res.status(200).json({ data: totalUsers});
+    } catch (error) {
+      console.error(error);
+      res.status(500).json({ error: "Internal Server Error" });
+    }
+  };
+  
  const getTotalIncome=async (req, res) => {
     try {
       const result = await Order.aggregate([
@@ -190,4 +200,4 @@ const getTotalOrders=async (req, res) => {
     }
   };
 
-  export {getTotalOrders,getSalesByCategory,getTotalProductsSold,getTotalIncome,getTotalOrdersByAdress,getOverviewSales,getTopSellerProduct}
+  export {getTotalOrders,getSalesByCategory,getTotalProductsSold,getTotalIncome,getTotalOrdersByAdress,getOverviewSales,getTopSellerProduct,getTotalUsers}
