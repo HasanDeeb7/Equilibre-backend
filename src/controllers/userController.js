@@ -15,6 +15,7 @@ function removeImage(image) {
 }
 
 export const signIn = async (req, res) => {
+  console.log(req.body)
   try {
     const token = req.cookies?.access_token;
     if (token) {
@@ -164,6 +165,7 @@ async function updateUser(req, res) {
   if (req.body.security) {
     delete user.security;
   }
+  console.log(req.body)
 
   try {
     const found = await User.findOne({ _id: user.id });
@@ -223,6 +225,4 @@ async function getOneUser(req, res) {
 }
 export { getUsers, addNewUser, updateUser, deleteUser, getOneUser };
 
-// 2024-01-14T15:46:19.846Z
-// 2024-01-14T15:46:19.846+00:00
-// 2024-01-14T15:46:19.846+00:00
+

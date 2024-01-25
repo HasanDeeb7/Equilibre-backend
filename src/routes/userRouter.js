@@ -15,4 +15,4 @@ userRoutes.post("/login", signIn);
 userRoutes.get("/", getUsers);
 userRoutes.get("/one", getOneUser);
 userRoutes.delete("/delete", deleteUser);
-userRoutes.patch("/update", updateUser);
+userRoutes.put("/update", updateUser);

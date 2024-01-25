@@ -20,7 +20,7 @@ const AddProduct = async (req, res) => {
     if (!req.file) {
         return res.status(400).json({ message: "No image uploaded" });
     }
-
+//black honey
     const image = req.file.location;
     const slug = slugify(name, { lower: true, replacement: '-' })
     let categoryId;
@@ -28,7 +28,7 @@ const AddProduct = async (req, res) => {
     if (categoryName) {
         try {
 
-            const category = await Category.findOne({ name: categoryName })
+            const category = await Category.findOne({ name: np })
             categoryId = category._id
         } catch (error) {
             console.log(error)
@@ -103,7 +103,8 @@ const getProducts = async (req, res) => {
 
 
 const getProduct = async (req, res) => {
-    const productId = req.body.productId
+
+        const productId = req.body.productId
     try {
         const product = await Product.findById(productId)
         if (!product) {

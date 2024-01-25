@@ -25,9 +25,9 @@ const sizeSchema = new Schema({
     }
 
 },
-{
-    timestamps: true
-  })
+    {
+        timestamps: true
+    })
 
 
 export default model('Size', sizeSchema)

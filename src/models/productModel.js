@@ -5,7 +5,7 @@ const productSchema = new Schema({
     name: {
         type: String,
         required: true,
-        unique:true
+        unique: true
     },
     description: {
         type: String,
@@ -34,11 +34,11 @@ const productSchema = new Schema({
         ref: 'Category',
     },
     sizes: [{ type: mongoose.Schema.Types.ObjectId, ref: "Size" }],
-    offerId:{ type: mongoose.Schema.Types.ObjectId, ref: "Offer" }
+    offerId: { type: mongoose.Schema.Types.ObjectId, ref: "Offer" }
 
 },
-{
-    timestamps: true
-  })
+    {
+        timestamps: true
+    })
 
 export default model('Product', productSchema)

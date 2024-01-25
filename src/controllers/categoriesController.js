@@ -55,3 +55,43 @@ export async function deleteCategory(req, res) {
     console.log(error);
   }
 }
+
+
+
+export const getByFilter = async (req, res) => {
+  try {
+    const { categories, priceRange } = req.body;
+    const conditions = [];
+
+    if (categories && categories.length > 0) {
+      conditions.push({ "category": { $in: categories } });
+    }
+
+    if (priceRange && priceRange.length > 0) {
+      const priceConditions = [];
+
+      priceRange.forEach(range => {
+        if (Number(range) === 1) {
+          priceConditions.push({ "price": { $gt: 0, $lte: 15 } });
+        } else if (Number(range) === 2) {
+          priceConditions.push({ "price": { $gt: 15, $lte: 30 } });
+        } else if (Number(range) === 3) {
+          priceConditions.push({ "price": { $gt: 30, $lte: 45 } });
+        } else if (Number(range) === 4) {
+          priceConditions.push({ "price": { $gt: 45 } });
+        }
+      });
+
+      conditions.push({ $or: priceConditions });
+    }
+
+    const products = await Product.find({
+      $and: conditions
+    });
+
+    res.status(200).json(products);
+  } catch (error) {
+    console.error(error);
+    res.status(500).send("Internal Server Error");
+  }
+}
