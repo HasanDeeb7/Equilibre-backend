@@ -28,7 +28,7 @@ const AddProduct = async (req, res) => {
     if (categoryName) {
         try {
 
-            const category = await Category.findOne({ name: np })
+            const category = await Category.findOne({ name: categoryName })
             categoryId = category._id
         } catch (error) {
             console.log(error)

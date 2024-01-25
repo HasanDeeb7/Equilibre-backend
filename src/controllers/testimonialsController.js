@@ -11,6 +11,16 @@ const createTestimonial = async (req, res) => {
           "Incomplete data. Please provide the author's name, content, and the image.",
       });
     }
+    if (content.length > 50) {
+      return res.status(400).json({
+        error: `Content exceeds the maximum character limit of 50 characters.`,
+      });
+    }
+    if (author.length > 20) {
+      return res.status(400).json({
+        error: `Author's name exceeds the maximum character limit of 50 characters.`,
+      });
+    }
     const image = req.file.location
     const testimonial = await testimonialsModel.create({
         image,
