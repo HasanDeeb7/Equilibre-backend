@@ -187,7 +187,7 @@ const getTotalOrders=async (req, res) => {
       const topSellerProducts = await Product.find({})
         .sort({ soldQuantityCounter: -1 })
         .limit(5)
-        .select('name soldQuantityCounter');
+        .select('name image soldQuantityCounter');
   
       if (topSellerProducts.length > 0) {
         res.status(200).json({ topSellerProducts });
