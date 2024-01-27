@@ -83,17 +83,17 @@ export const updateOrder = async (req, res) => {
     try {
         const oldOrder = await Order.findById(id);
 
-        if (oldOrder.status === "cancelled" || oldOrder.status === "completed") {
+        if (oldOrder.status === "canceled" || oldOrder.status === "completed") {
             return res.json({ message: `You can't change the status, order already ${oldOrder.status}` });
         }
 
-        if (status === "cancelled") {
+        if (status === "canceled") {
             // Update product counter and sizes for the old order
             await updateProductQuantities(oldOrder.products, -1);
             await updateSizeStock(oldOrder.products, 1);
         }
 
-        if (oldOrder.status === "on-way" || oldOrder.status === "processing") {
+        if (oldOrder.status === "onWay" || oldOrder.status === "processing") {
             const order = await Order.findByIdAndUpdate(id, { status, products });
             return res.status(200).json({ message: 'Order updated successfully' });
         }
@@ -123,7 +123,7 @@ export const deleteOrder = async (req, res) => {
         }
 
         // Update product counter and stock for the order being deleted
-        if (order.status == 'on-way' || order.status == 'processing') {
+        if (order.status == 'onWay' || order.status == 'processing') {
             await updateProductQuantities(products, -1);
             await updateSizeStock(products, 1);
         }

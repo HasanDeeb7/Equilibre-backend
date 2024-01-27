@@ -18,6 +18,6 @@ productRoutes.delete("/deleteProduct", deleteProduct);
 productRoutes.get("/AllProducts", getProducts);
 productRoutes.post("/search", searchByProductName);
 productRoutes.post("/filter", filterProducts);
-productRoutes.get("/byId", getProduct);
+productRoutes.get("/byId/:slug", getProduct);
 productRoutes.get("/byCategory", getProductsByCategory);
 productRoutes.patch("/edit", uploadImage.single("image"), editProduct);
