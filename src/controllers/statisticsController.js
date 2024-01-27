@@ -102,7 +102,7 @@ const getTotalOrders=async (req, res) => {
 
   const getTotalOrdersByAdress=async (req, res) => {
     try {
-      const allOrders=await Order.countDocuments();
+      const allOrders=await Order.countDocuments({ country: "lebanon" });
       const ordersByAddress = await Order.aggregate([
         { $match: { country: "lebanon", city: { $ne: null } } },
         { $group: { _id: "$city", totalOrders: { $sum: 1 } } },
