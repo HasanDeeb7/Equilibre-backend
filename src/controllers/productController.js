@@ -219,7 +219,7 @@ async function searchByProductName(req, res) {
     }
     return res
       .status(404)
-      .json({ message: "No products with from this category" });
+      .json([]);
   } catch (error) {
     console.log(error);
   }
@@ -241,7 +241,7 @@ async function filterProducts(req, res) {
   let priceFilter = [];
   if (prices && prices.length > 0) {
     priceFilter = prices.map((range) => ({
-      "sizesInfo.price": { $gte: range.minPrice, $lte: range.maxPrice },
+      "sizes.price": { $gte: range.minPrice, $lte: range.maxPrice },
     }));
   }
   try {
@@ -251,7 +251,7 @@ async function filterProducts(req, res) {
           from: "sizes",
           localField: "sizes",
           foreignField: "_id",
-          as: "sizesInfo",
+          as: "sizes",
         },
       },
       {
@@ -281,9 +281,10 @@ async function filterProducts(req, res) {
     }
   
     const result = await Product.aggregate(pipeline);
+    await Product.populate(result, { path: 'offerId', model: 'Offer' });
   
     if (result.length === 0) {
-      return res.status(200).json({ message: "no products for this filter" });
+      return res.status(200).json( [] );
     }
   
     return res.json(result);
