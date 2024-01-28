@@ -1,6 +1,5 @@
 import globalOfferModel from "../models/globalOfferModel.js";
 import mongoose from "mongoose";
-import { deleteImage } from "../services.js";
 
 const createOffer = async (req, res) => {
   try {
@@ -11,10 +10,8 @@ const createOffer = async (req, res) => {
           "Incomplete data. Please provide start Date, end Date, and the rate of the offer.",
       });
     }
-    const image = req.file.location;
     const offer = await globalOfferModel.create({
       title,
-      image,
       startDate: new Date(startDate),
       endDate: new Date(endDate),
       rate: parseFloat(rate),
@@ -22,9 +19,6 @@ const createOffer = async (req, res) => {
     });
     res.status(200).json(offer);
   } catch (error) {
-    if (req.file) {
-      deleteImage(req.file.location);
-    }
     res.status(500).json({ message: "Error while creating an offer" });
   }
 };
@@ -39,7 +33,6 @@ const deleteOffer = async (req, res) => {
     if (!offer) {
       return res.status(404).json({ error: "no such offer" });
     }
-    deleteImage(offer.image);
     res.status(200).json("Offer deleted successfully");
   } catch (error) {
     res.status(500).json({ message: "Error while deleting an offer" });
@@ -86,11 +79,9 @@ const updateOffer = async (req, res) => {
           "No update data provided. Please provide start Date, end Date, or rate.",
       });
     }
-    const oldOffer = await globalOfferModel.findById(id)
     const offer = await globalOfferModel.findByIdAndUpdate(
       { _id: id },
       {
-        image: req.file ? req.file.location : undefined,
         title: title ? title : undefined,
         startDate: startDate ? new Date(startDate) : undefined,
         endDate: endDate ? new Date(endDate) : undefined,
@@ -101,16 +92,9 @@ const updateOffer = async (req, res) => {
     );
     if (!offer) {
       return res.status(404).json({ error: "no such offer" });
-    }
-    if(req.file){
-      deleteImage(oldOffer.image)
-    }
-    
+    }    
     res.status(200).json("Offer updated successfully");
   } catch (error) {
-    if(req.file){
-      deleteImage(req.file.location)
-  }
     res.status(500).json({ message: "Error while updating an offer" });
   }
 };
