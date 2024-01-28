@@ -7,10 +7,6 @@ const offerSchema = new mongoose.Schema({
     type: String,
     required: true,
   },
-  image: {
-    type: String,
-    required: true,
-  },
   startDate: {
     type: Date,
     required: true,
@@ -21,10 +17,6 @@ const offerSchema = new mongoose.Schema({
   },
   rate: {
     type: Number,
-    required: true,
-  },
-  description: {
-    type: String,
     required: true,
   },
   createdAt: {
