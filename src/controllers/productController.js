@@ -109,7 +109,7 @@ const deleteProduct = async (req, res) => {
 
 const getProducts = async (req, res) => {
   try {
-    const products = await Product.find().populate(["sizes", "offerId"]);
+    const products = await Product.find({ isDeleted: false }).populate(["sizes", "offerId"]);
     res.status(200).json({ data: products });
   } catch (error) {
     console.log(error);
@@ -192,7 +192,7 @@ async function getProductsByCategory(req, res) {
     return res.status(400).json({ message: "No category id provided" });
   }
   try {
-    const products = await Product.find({ categoryId: categoryId }).populate(
+    const products = await Product.find({ categoryId: categoryId, isDeleted: false }).populate(
       "categoryId"
     );
     if (products) {
@@ -213,7 +213,7 @@ async function searchByProductName(req, res) {
   }
   try {
     const products = await Product.find({
-      name: { $regex: `.*${name}.*`, $options: "i" },
+      name: { $regex: `.*${name}.*`, $options: "i" },isDeleted: false
     }).populate(["sizes", "offerId"]);
     if (products) {
       return res.json(products);
@@ -263,6 +263,12 @@ async function filterProducts(req, res) {
           as: "categoryInfo",
         },
       },
+      {
+        $match: {
+          isDeleted: { $ne: true }, //filter out deleted products
+        },
+      },
+
     ];
    // If price filter conditions exist, add a match stage for prices using $or.
     if (filterCriteria.categoryId) {
