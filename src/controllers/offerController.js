@@ -18,6 +18,17 @@ const addOffer = async (req, res) => {
         });
       }
 
+    const existingOffer = await Offer.findOne({
+        startDate: { $lte: new Date(endDate) },
+        endDate: { $gte: new Date(startDate) },
+      });
+
+      if (existingOffer) {
+        return res.status(400).json({
+          error: "An offer with the same date range already exists.",
+        });
+      }
+
     const addedOffer = await Offer.create({ discountRate, startDate, endDate })
     try {
         await Promise.all(productNames.map(async (productName, i) => {
