@@ -47,7 +47,6 @@ const userSchema = new mongoose.Schema({
     type: Number,
     min: 18,
     max: 78,
-    required: true,
   },
 });
 

@@ -7,32 +7,22 @@ const addOffer = async (req, res) => {
     return res.status(400).json({ message: "all field are required" });
   }
 
-    const existingOffer = await Offer.findOne({
-        startDate: { $lte: new Date(endDate) },
-        endDate: { $gte: new Date(startDate) },
-      });
+  const existingOffer = await Offer.findOne({
+    startDate: { $lte: new Date(endDate) },
+    endDate: { $gte: new Date(startDate) },
+  });
 
-      if (existingOffer) {
-        return res.status(400).json({
-          error: "An offer with the same date range already exists.",
-        });
-      }
+  if (existingOffer) {
+    return res.status(400).json({
+      error: "An offer with the same date range already exists.",
+    });
+  }
 
-    const existingOffer = await Offer.findOne({
-        startDate: { $lte: new Date(endDate) },
-        endDate: { $gte: new Date(startDate) },
-      });
-
-      if (existingOffer) {
-        return res.status(400).json({
-          error: "An offer with the same date range already exists.",
-        });
-      }
-
-    const addedOffer = await Offer.create({ discountRate, startDate, endDate })
-    try {
-        await Promise.all(productNames.map(async (productName, i) => {
-            const product = await Product.findOne({ name: productName });
+  const addedOffer = await Offer.create({ discountRate, startDate, endDate });
+  try {
+    await Promise.all(
+      productNames.map(async (productName, i) => {
+        const product = await Product.findOne({ name: productName });
 
         if (product) {
           await Product.findByIdAndUpdate(product._id, {
@@ -44,10 +34,8 @@ const addOffer = async (req, res) => {
         }
       })
     );
-    const updatedOffer = await Offer.findById(addedOffer._id);
-    return res
-      .status(200)
-      .json({ message: `offer added succ `, data: updatedOffer });
+
+    return res.status(200).json({ message: `offer added successfull ` });
   } catch (error) {
     console.log(error);
     return res.status(500).json(error);

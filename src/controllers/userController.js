@@ -78,7 +78,7 @@ export const signIn = async (req, res) => {
 
 async function addNewUser(req, res) {
   let user = req.body;
-
+  console.log(req.body);
   let image;
   if (!req.file) {
     req.file = { filename: "user.jpg" };
@@ -130,7 +130,6 @@ async function addNewUser(req, res) {
             .json({ error: "a User with this email already exist" });
         }
         const hashedPass = await bcrypt.hash(user.password, 10);
-        user.image = image;
         try {
           const hashedPass = await bcrypt.hash(user.password, 10);
           const newUser = await User.create({
