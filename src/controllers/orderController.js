@@ -154,30 +154,18 @@ export const getOneOrderById = async (req, res) => {
 };
 
 export const deleteOrder = async (req, res) => {
-    const { id } = req.params;
-    const { products } = req.body;
-    try {
-        const order = await Order.findById(id)
-        if (!order) {
-            return res.status(400).json({ message: 'There is no order with this id' })
-        }
-
-        // Update product counter and stock for the order being deleted
-        if (order.status == 'onWay' || order.status == 'processing') {
-            await updateProductQuantities(products, -1);
-            await updateSizeStock(products, 1);
-        }
-
-        // Delete the order
-        await Order.findByIdAndDelete(id);
-
-        res.status(200).json({ message: "Order is deleted successfully" });
-    } catch (error) {
-        res.status(500).json({ message: "Error deleting an Order" });
+  const { id } = req.params;
+  const { products } = req.body;
+  try {
+    const order = await Order.findById(id);
+    if (!order) {
+      return res
+        .status(400)
+        .json({ message: "There is no order with this id" });
     }
 
     // Update product counter and stock for the order being deleted
-    if (order.status == "on-way" || order.status == "processing") {
+    if (order.status == "onWay" || order.status == "processing") {
       await updateProductQuantities(products, -1);
       await updateSizeStock(products, 1);
     }

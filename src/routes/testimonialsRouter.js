@@ -19,8 +19,8 @@ testomonialsRoutes.get("/", getTestimonials);
 testomonialsRoutes.delete("/delete", authenticate, isAdmin, deleteTestimonial);
 testomonialsRoutes.patch(
   "/update",
+  uploadImage.single("image"),
   authenticate,
   isAdmin,
-  uploadImage.single("image"),
   updateTestimonial
 );
