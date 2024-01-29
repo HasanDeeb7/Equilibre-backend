@@ -1,4 +1,4 @@
-import testimonialsModel from "../models/testimonialsModel.js";
+ import testimonialsModel from "../models/testimonialsModel.js";
 import mongoose from "mongoose";
 import { deleteImage } from "../services.js";
 
