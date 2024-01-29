@@ -2,7 +2,10 @@ import Category from "../models/categoriesModel.js";
 
 export async function getCategories(req, res) {
   try {
-    const categories = await Category.find();
+    const categories = await Category.find().populate({
+      path:'products',
+      model:'Product'
+    });
     if (categories) {
       res.json(categories);
     }

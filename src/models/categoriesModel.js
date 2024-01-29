@@ -6,6 +6,8 @@ const categoriesModel = Schema({
   products: {
     type: [{ type: mongoose.Schema.Types.ObjectId, ref: "Product" }],
   },
+},{
+  timestamps: true
 });
 
 export default model("Category", categoriesModel);
