@@ -53,7 +53,7 @@ export async function updateConsultation(req, res) {
   }
 }
 export async function deleteConsultation(req, res) {
-  const { id } = req.body;
+  const { id } = req.query;
   if (!id) {
     return res.status(400).json({ message: "No id provided!" });
   }
