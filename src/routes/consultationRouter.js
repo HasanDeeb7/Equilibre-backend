@@ -11,4 +11,4 @@ export const consultationRouter = Router();
 consultationRouter.get("/", getConsultations);
 consultationRouter.post("/create", createConsultation);
 consultationRouter.patch("/update", updateConsultation);
-consultationRouter.get("/delete", deleteConsultation);
+consultationRouter.delete("/delete", deleteConsultation);
