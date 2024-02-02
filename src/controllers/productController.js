@@ -27,7 +27,7 @@ const AddProduct = async (req, res) => {
 
   try {
     // Check if a product with the same name already exists
-    const existingProduct = await Product.findOne({ name });
+    const existingProduct = await Product.findOne({ name ,isDeleted:false});
 
     if (existingProduct) {
       return res
@@ -35,6 +35,13 @@ const AddProduct = async (req, res) => {
         .json({ message: "Product with this name already exists" });
     }
 
+
+     // Check if a product with the same name already deleted (soft delete)
+     const existingProductDeleted = await Product.findOne({ name ,isDeleted:true});
+
+     if (existingProductDeleted) {
+       
+     }
     // Create a new product
     const newProduct = await Product.create({
       name,

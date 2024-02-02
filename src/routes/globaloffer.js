@@ -5,8 +5,8 @@ import {uploadImage} from '../middlewares/multer.js'
 
 export const globalofferRoutes = Router();
 
-globalofferRoutes.post("/create",uploadImage.single('image'), createOffer);
+globalofferRoutes.post("/create", createOffer);
 globalofferRoutes.get("/", getOffers);
 globalofferRoutes.get("/activeOffer", getActiveOffer);
 globalofferRoutes.delete("/delete", deleteOffer);
-globalofferRoutes.patch("/update",uploadImage.single('image'), updateOffer);
+globalofferRoutes.patch("/update",updateOffer);
