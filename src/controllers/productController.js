@@ -27,7 +27,6 @@ const AddProduct = async (req, res) => {
   try {
     // Check if a product with the same name already exists
     const existingProduct = await Product.findOne({ name });
-
     if (existingProduct) {
       return res
         .status(400)
@@ -57,6 +56,7 @@ const AddProduct = async (req, res) => {
             { name: categoryName },
             { $push: { products: newProduct._id } }
           );
+          await Product.findOneAndUpdate({_id: newProduct._id}, {categoryId: categoryId})
         } else {
           return res.status(404).json({ message: "Category not found" });
         }
@@ -139,7 +139,7 @@ const getProduct = async (req, res) => {
 
 const editProduct = async (req, res) => {
   const {
-    productId,
+    _id,
     name,
     description,
     nutritionalInfo,
@@ -147,7 +147,6 @@ const editProduct = async (req, res) => {
     soldQuantityCounter,
     categoryName,
   } = req.body;
-
   if (!req.file) {
     return res.status(400).json({ message: "No image uploaded" });
   }
@@ -168,17 +167,17 @@ const editProduct = async (req, res) => {
     }
   }
   try {
-    await Product.findByIdAndUpdate(productId, {
-      name,
-      description,
-      nutritionalInfo,
-      image,
-      slug,
-      isDeleted,
-      soldQuantityCounter,
-      categoryId,
+    await Product.findOneAndUpdate({_id : _id}, {
+      name: name,
+      description: description,
+      nutritionalInfo: nutritionalInfo,
+      image : image,
+      slug: slug,
+      isDeleted: isDeleted,
+      soldQuantityCounter: soldQuantityCounter,
+      categoryId: categoryId,
     });
-    const updatedproduct = await Product.findById(productId);
+    const updatedproduct = await Product.findById(_id);
     res
       .status(200)
       .json({ message: "product Info edited succ", data: updatedproduct });

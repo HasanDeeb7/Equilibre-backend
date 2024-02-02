@@ -64,13 +64,18 @@ const getSize = async (req, res) => {
 };
 
 const editSize = async (req, res) => {
-  const { sizeId, capacity, unit, stock } = req.body;
+  const { sizes } = req.body;
   try {
-    await Size.findByIdAndUpdate(sizeId, { capacity, unit, stock });
-    const updatedSize = await Size.findById(sizeId);
+    await Promise.all(
+      sizes.map(async (item) => {
+        const size = await SizeModel.findOneAndUpdate({_id: item._id}, {capacity: item.capacity, price: item.price, unit: item.unit, stock: item.stock });
+      })
+    );
+    // await Size.findByIdAndUpdate(sizeId, { capacity, unit, stock });
+    // const updatedSize = await Size.findById(sizeId);
     res
       .status(200)
-      .json({ message: "Size Info edited succ", data: updatedSize });
+      .json({ message: "Size Info edited succ" });
   } catch (error) {
     console.log(error);
     return res.status(500).json(error);
