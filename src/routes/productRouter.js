@@ -20,4 +20,4 @@ productRoutes.post("/search", searchByProductName);
 productRoutes.post("/filter", filterProducts);
 productRoutes.get("/byId/:slug", getProduct);
 productRoutes.get("/byCategory", getProductsByCategory);
-productRoutes.patch("/edit", uploadImage.single("image"), editProduct);
+productRoutes.patch("/editProduct", uploadImage.single("image"), editProduct);

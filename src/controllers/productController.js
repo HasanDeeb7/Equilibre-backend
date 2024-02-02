@@ -11,10 +11,9 @@ const AddProduct = async (req, res) => {
     description,
     nutritionalInfo,
     isDeleted,
-    soldQuantityCounter,
     categoryName,
-    sizes,
     offerId,
+    sizes
   } = req.body;
 
   if (!req.file) {
@@ -50,10 +49,8 @@ const AddProduct = async (req, res) => {
       image,
       slug,
       isDeleted,
-      soldQuantityCounter,
-      categoryId,
       sizes,
-      offerId,
+      categoryId,
     });
 
     if (categoryName) {
@@ -67,6 +64,7 @@ const AddProduct = async (req, res) => {
             { name: categoryName },
             { $push: { products: newProduct._id } }
           );
+          await Product.findOneAndUpdate({_id: newProduct._id}, {categoryId: categoryId})
         } else {
           return res.status(404).json({ message: "Category not found" });
         }
@@ -86,37 +84,42 @@ const AddProduct = async (req, res) => {
 };
 
 const deleteProduct = async (req, res) => {
-  const productId = req.body.productId;
+  const productId = req.query.productId;
   try {
     const product = await Product.findById(productId);
 
     if (product) {
-      //remove the id of product from the offer docs
       if (product.offerId) {
         await Offer.findByIdAndUpdate(product.offerId, {
           $pull: { products: productId },
         });
       }
 
-      await Product.findByIdAndUpdate(productId, { isDeleted: true });
+      const sizeIdsToDelete = product.sizes.map((size) => size._id);
 
-      return res
+      await Size.deleteMany({ _id: { $in: sizeIdsToDelete } });
+
+      await Product.findByIdAndDelete(productId);
+
+      res
         .status(200)
-        .json({ message: `"${product.name}" product had been deleted succ` });
+        .json({ message: "Product and associated sizes deleted successfully" });
     } else {
-      return res
-        .status(404)
-        .json({ message: `no such a product with this id` });
+      res.status(404).json({ message: "Product not found" });
     }
   } catch (error) {
-    console.log(error);
-    return res.status(500).json(error);
+    console.error(error);
+    res.status(500).json({ error: "Internal Server Error" });
   }
 };
 
 const getProducts = async (req, res) => {
   try {
-    const products = await Product.find({ isDeleted: false }).populate(["sizes", "offerId"]);
+    const products = await Product.find({ isDeleted: false }).populate([
+      "sizes",
+      "offerId",
+      "categoryId",
+    ]);
     res.status(200).json({ data: products });
   } catch (error) {
     console.log(error);
@@ -126,7 +129,7 @@ const getProducts = async (req, res) => {
 
 const getProduct = async (req, res) => {
   const slug = req.params.slug;
-  
+
   try {
     const product = await Product.findOne({ slug }).populate([
       "sizes",
@@ -144,7 +147,7 @@ const getProduct = async (req, res) => {
 
 const editProduct = async (req, res) => {
   const {
-    productId,
+    _id,
     name,
     description,
     nutritionalInfo,
@@ -152,7 +155,6 @@ const editProduct = async (req, res) => {
     soldQuantityCounter,
     categoryName,
   } = req.body;
-
   if (!req.file) {
     return res.status(400).json({ message: "No image uploaded" });
   }
@@ -173,17 +175,17 @@ const editProduct = async (req, res) => {
     }
   }
   try {
-    await Product.findByIdAndUpdate(productId, {
-      name,
-      description,
-      nutritionalInfo,
-      image,
-      slug,
-      isDeleted,
-      soldQuantityCounter,
-      categoryId,
+    await Product.findOneAndUpdate({_id : _id}, {
+      name: name,
+      description: description,
+      nutritionalInfo: nutritionalInfo,
+      image : image,
+      slug: slug,
+      isDeleted: isDeleted,
+      soldQuantityCounter: soldQuantityCounter,
+      categoryId: categoryId,
     });
-    const updatedproduct = await Product.findById(productId);
+    const updatedproduct = await Product.findById(_id);
     res
       .status(200)
       .json({ message: "product Info edited succ", data: updatedproduct });
@@ -199,9 +201,10 @@ async function getProductsByCategory(req, res) {
     return res.status(400).json({ message: "No category id provided" });
   }
   try {
-    const products = await Product.find({ categoryId: categoryId, isDeleted: false }).populate(
-      "categoryId"
-    );
+    const products = await Product.find({
+      categoryId: categoryId,
+      isDeleted: false,
+    }).populate("categoryId");
     if (products) {
       return res.json(products);
     }
@@ -220,14 +223,13 @@ async function searchByProductName(req, res) {
   }
   try {
     const products = await Product.find({
-      name: { $regex: `.*${name}.*`, $options: "i" },isDeleted: false
+      name: { $regex: `.*${name}.*`, $options: "i" },
+      isDeleted: false,
     }).populate(["sizes", "offerId"]);
     if (products) {
       return res.json(products);
     }
-    return res
-      .status(404)
-      .json([]);
+    return res.status(404).json([]);
   } catch (error) {
     console.log(error);
   }
@@ -237,7 +239,7 @@ async function filterProducts(req, res) {
   const { categories, prices } = req.body;
 
   const filterCriteria = {};
-   // If categories are provided, map them to ObjectId and add to filterCriteria.
+  // If categories are provided, map them to ObjectId and add to filterCriteria.
   if (categories && categories.length > 0) {
     filterCriteria.categoryId = {
       $in: categories.map(
@@ -275,9 +277,8 @@ async function filterProducts(req, res) {
           isDeleted: { $ne: true }, //filter out deleted products
         },
       },
-
     ];
-   // If price filter conditions exist, add a match stage for prices using $or.
+    // If price filter conditions exist, add a match stage for prices using $or.
     if (filterCriteria.categoryId) {
       pipeline.push({
         $match: {
@@ -285,7 +286,7 @@ async function filterProducts(req, res) {
         },
       });
     }
-  
+
     if (priceFilter.length > 0) {
       pipeline.push({
         $match: {
@@ -293,21 +294,20 @@ async function filterProducts(req, res) {
         },
       });
     }
-  
+
     const result = await Product.aggregate(pipeline);
-    await Product.populate(result, { path: 'offerId', model: 'Offer' });
-  
+    await Product.populate(result, { path: "offerId", model: "Offer" });
+
     if (result.length === 0) {
-      return res.status(200).json( [] );
+      return res.status(200).json([]);
     }
-  
+
     return res.json(result);
   } catch (error) {
     console.error(error);
     return res.status(500).json({ message: "Internal Server Error" });
   }
 }
-
 
 export {
   AddProduct,
