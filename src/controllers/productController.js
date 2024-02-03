@@ -26,7 +26,7 @@ const AddProduct = async (req, res) => {
 
   try {
     // Check if a product with the same name already exists
-    const existingProduct = await Product.findOne({ name ,isDeleted:false});
+    const existingProduct = await Product.findOne({ name, isDeleted: false });
 
     if (existingProduct) {
       return res
@@ -34,9 +34,11 @@ const AddProduct = async (req, res) => {
         .json({ message: "Product with this name already exists" });
     }
 
-
-     // Check if a product with the same name already deleted (soft delete)
-     const existingProductDeleted = await Product.findOne({ name ,isDeleted:true});
+    // Check if a product with the same name already deleted (soft delete)
+    const existingProductDeleted = await Product.findOne({
+      name,
+      isDeleted: true,
+    });
 
      if (existingProductDeleted) {
        
@@ -53,13 +55,7 @@ const AddProduct = async (req, res) => {
       categoryId,
     });
 
-    if (categoryName) {
-      try {
-        const category = await Category.findOne({ name: categoryName });
-
-        if (category) {
-          categoryId = category._id;
-
+          // Add the new product's ID to the 'products' array in the associated category
           await Category.findOneAndUpdate(
             { name: categoryName },
             { $push: { products: newProduct._id } }
@@ -68,18 +64,17 @@ const AddProduct = async (req, res) => {
         } else {
           return res.status(404).json({ message: "Category not found" });
         }
-      } catch (error) {
-        console.log(error);
-        return res.status(500).json(error);
+      } catch (categoryError) {
+        console.error(categoryError);
+        return res.status(500).json({
+          message: "Error adding product",
+          error: categoryError,
+        });
       }
     }
-
-    return res
-      .status(200)
-      .json({ message: "Product added successfully", data: newProduct });
   } catch (error) {
     console.error(error);
-    return res.status(500).json(error);
+    return res.status(500).json({ message: "Error adding product", error });
   }
 };
 
