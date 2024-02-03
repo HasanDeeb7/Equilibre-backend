@@ -55,7 +55,14 @@ const AddProduct = async (req, res) => {
       categoryId,
     });
 
-          // Add the new product's ID to the 'products' array in the associated category
+
+    if (categoryName) {
+      try {
+        const category = await Category.findOne({ name: categoryName });
+
+        if (category) {
+          categoryId = category._id;
+
           await Category.findOneAndUpdate(
             { name: categoryName },
             { $push: { products: newProduct._id } }
