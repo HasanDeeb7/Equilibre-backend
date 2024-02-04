@@ -52,6 +52,7 @@ const AddProduct = async (req, res) => {
       categoryId,
     });
 
+
     if (categoryName) {
       try {
         const category = await Category.findOne({ name: categoryName });
