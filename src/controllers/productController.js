@@ -13,7 +13,7 @@ const AddProduct = async (req, res) => {
     isDeleted,
     categoryName,
     offerId,
-    sizes
+    sizes,
   } = req.body;
 
   if (!req.file) {
@@ -26,7 +26,7 @@ const AddProduct = async (req, res) => {
 
   try {
     // Check if a product with the same name already exists
-    const existingProduct = await Product.findOne({ name ,isDeleted:false});
+    const existingProduct = await Product.findOne({ name, isDeleted: false });
 
     if (existingProduct) {
       return res
@@ -34,13 +34,14 @@ const AddProduct = async (req, res) => {
         .json({ message: "Product with this name already exists" });
     }
 
+    // Check if a product with the same name already deleted (soft delete)
+    const existingProductDeleted = await Product.findOne({
+      name,
+      isDeleted: true,
+    });
 
-     // Check if a product with the same name already deleted (soft delete)
-     const existingProductDeleted = await Product.findOne({ name ,isDeleted:true});
-
-     if (existingProductDeleted) {
-       
-     }
+    if (existingProductDeleted) {
+    }
     // Create a new product
     const newProduct = await Product.create({
       name,
@@ -64,7 +65,10 @@ const AddProduct = async (req, res) => {
             { name: categoryName },
             { $push: { products: newProduct._id } }
           );
-          await Product.findOneAndUpdate({_id: newProduct._id}, {categoryId: categoryId})
+          await Product.findOneAndUpdate(
+            { _id: newProduct._id },
+            { categoryId: categoryId }
+          );
         } else {
           return res.status(404).json({ message: "Category not found" });
         }
@@ -99,7 +103,10 @@ const deleteProduct = async (req, res) => {
 
       await Size.deleteMany({ _id: { $in: sizeIdsToDelete } });
 
-      await Product.findByIdAndDelete(productId);
+      await Product.findByIdAndUpdate(productId, {
+        isDeleted: true,
+        name: null,
+      });
 
       res
         .status(200)
@@ -155,10 +162,10 @@ const editProduct = async (req, res) => {
     soldQuantityCounter,
     categoryName,
   } = req.body;
-  if (!req.file) {
-    return res.status(400).json({ message: "No image uploaded" });
-  }
-  const image = req.file.location;
+  // if (!req.file) {
+  //   return res.status(400).json({ message: "No image uploaded" });
+  // }
+  const image = req.file?.location;
   let slug;
   if (name) {
     slug = slugify(name, { lower: true, replacement: "-" });
@@ -174,17 +181,22 @@ const editProduct = async (req, res) => {
       return res.status(500).json(error);
     }
   }
+  const existingProduct = await Product.findById(_id);
+
   try {
-    await Product.findOneAndUpdate({_id : _id}, {
-      name: name,
-      description: description,
-      nutritionalInfo: nutritionalInfo,
-      image : image,
-      slug: slug,
-      isDeleted: isDeleted,
-      soldQuantityCounter: soldQuantityCounter,
-      categoryId: categoryId,
-    });
+    await Product.updateOne(
+      { _id: _id },
+      {
+        name: name,
+        description: description,
+        nutritionalInfo: nutritionalInfo,
+        image: image || existingProduct.image,
+        slug: slug,
+        isDeleted: isDeleted,
+        soldQuantityCounter: soldQuantityCounter,
+        categoryId: categoryId,
+      }
+    );
     const updatedproduct = await Product.findById(_id);
     res
       .status(200)

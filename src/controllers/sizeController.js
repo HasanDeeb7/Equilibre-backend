@@ -21,17 +21,17 @@ const addSize = async (req, res) => {
 };
 
 const deleteSize = async (req, res) => {
-  const sizeId = req.body.sizeId;
+  const { sizes } = req.body;
   try {
-    const size = await Size.findById(sizeId);
-    if (!size) {
-      return req.status(404).json({ message: "there is no size with this id" });
-    }
-
-    await Product.findByIdAndUpdate(size.productId, {
-      $pull: { sizes: sizeId },
-    });
-    await Size.findOneAndDelete(sizeId);
+    Promise.all(
+      sizes.map(async (id) => {
+        const size = await Size.findById(id);
+        await Product.findByIdAndUpdate(size.productId, {
+          $pull: { sizes: id },
+        });
+        await Size.findOneAndDelete({ _id: id });
+      })
+    );
     return res.status(200).json({ message: "size deleted succ" });
   } catch (error) {
     console.log(error);
@@ -64,18 +64,35 @@ const getSize = async (req, res) => {
 };
 
 const editSize = async (req, res) => {
-  const { sizes } = req.body;
+  const { sizes, toDelete } = req.body;
+  console.log(req.body);
   try {
     await Promise.all(
       sizes.map(async (item) => {
-        const size = await SizeModel.findOneAndUpdate({_id: item._id}, {capacity: item.capacity, price: item.price, unit: item.unit, stock: item.stock });
+        const size = await SizeModel.findOneAndUpdate(
+          { _id: item._id },
+          {
+            capacity: item.capacity,
+            price: item.price,
+            unit: item.unit,
+            stock: item.stock,
+          }
+        );
       })
     );
-    // await Size.findByIdAndUpdate(sizeId, { capacity, unit, stock });
-    // const updatedSize = await Size.findById(sizeId);
-    res
-      .status(200)
-      .json({ message: "Size Info edited succ" });
+    // Promise.all(toDelete?.map(item));
+    if (toDelete.length > 0) {
+      Promise.all(
+        toDelete.map(async (id) => {
+          const size = await Size.findById(id);
+          await Product.findByIdAndUpdate(size.productId, {
+            $pull: { sizes: id },
+          });
+          await Size.findOneAndDelete({ _id: id });
+        })
+      );
+    }
+    res.status(200).json({ message: "Size Info edited succ" });
   } catch (error) {
     console.log(error);
     return res.status(500).json(error);
