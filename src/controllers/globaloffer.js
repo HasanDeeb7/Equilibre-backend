@@ -90,6 +90,16 @@ const updateOffer = async (req, res) => {
           "No update data provided. Please provide start Date, end Date, or rate.",
       });
     }
+    const existingOffer = await globalOfferModel.findOne({
+      startDate: { $lte: new Date(endDate) },
+      endDate: { $gte: new Date(startDate) },
+    });
+
+    if (existingOffer) {
+      return res.status(400).json({
+        error: "An offer with the same date range already exists.",
+      });
+    }
     const offer = await globalOfferModel.findByIdAndUpdate(
       { _id: id },
       {
@@ -102,7 +112,7 @@ const updateOffer = async (req, res) => {
     );
     if (!offer) {
       return res.status(404).json({ error: "no such offer" });
-    }    
+    }
     res.status(200).json("Offer updated successfully");
   } catch (error) {
     res.status(500).json({ message: "Error while updating an offer" });

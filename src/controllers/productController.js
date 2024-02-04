@@ -40,8 +40,6 @@ const AddProduct = async (req, res) => {
       isDeleted: true,
     });
 
-    if (existingProductDeleted) {
-    }
     // Create a new product
     const newProduct = await Product.create({
       name,
@@ -72,18 +70,17 @@ const AddProduct = async (req, res) => {
         } else {
           return res.status(404).json({ message: "Category not found" });
         }
-      } catch (error) {
-        console.log(error);
-        return res.status(500).json(error);
+      } catch (categoryError) {
+        console.error(categoryError);
+        return res.status(500).json({
+          message: "Error adding product",
+          error: categoryError,
+        });
       }
     }
-
-    return res
-      .status(200)
-      .json({ message: "Product added successfully", data: newProduct });
   } catch (error) {
     console.error(error);
-    return res.status(500).json(error);
+    return res.status(500).json({ message: "Error adding product", error });
   }
 };
 

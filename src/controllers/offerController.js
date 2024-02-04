@@ -2,52 +2,48 @@ import Offer from "../models/offerModel.js";
 import Product from "../models/productModel.js";
 
 const addOffer = async (req, res) => {
-  const { discountRate, startDate, endDate, productNames } = req.body;
-  if (!discountRate || !startDate || !endDate || productNames == []) {
-    return res.status(400).json({ message: "all field are required" });
-  }
+  const { discountRate, startDate, endDate, products } = req.body;
 
-  const existingOffer = await Offer.findOne({
-    startDate: { $lte: new Date(endDate) },
-    endDate: { $gte: new Date(startDate) },
-  });
-
-  if (existingOffer) {
-    return res.status(400).json({
-      error: "An offer with the same date range already exists.",
-    });
-  }
-
-  const addedOffer = await Offer.create({ discountRate, startDate, endDate });
   try {
-    await Promise.all(
-      productNames.map(async (productName, i) => {
-        const product = await Product.findOne({ name: productName });
+    if (!discountRate || !startDate || !endDate || !products || products.length === 0) {
+      return res.status(400).json({ message: "All fields are required, and at least one product must be provided." });
+    }
 
+    // Check for an existing offer with the same date range (if needed)
+    // const existingOffer = await Offer.findOne({
+    //   startDate: { $lte: new Date(endDate) },
+    //   endDate: { $gte: new Date(startDate) },
+    // });
+
+    // if (existingOffer) {
+    //   return res.status(400).json({ error: "An offer with the same date range already exists." });
+    // }
+
+    const addedOffer = await Offer.create({ discountRate, startDate, endDate });
+
+    // Update associated products
+    await Promise.all(
+      products.map(async (product) => {
         if (product) {
-          await Product.findByIdAndUpdate(product._id, {
-            offerId: addedOffer._id,
-          });
-          await Offer.findByIdAndUpdate(addedOffer._id, {
-            $push: { products: product._id },
-          });
+          await Product.findByIdAndUpdate(product._id, { offerId: addedOffer._id });
+          await Offer.findByIdAndUpdate(addedOffer._id, { $push: { products: product._id } });
         }
       })
     );
 
-    return res.status(200).json({ message: `offer added successfull ` });
+    return res.status(200).json({ message: "Offer added successfully." });
   } catch (error) {
-    console.log(error);
-    return res.status(500).json(error);
+    console.error(error);
+    return res.status(500).json({ message: "Internal Server Error." });
   }
 };
 
 const deleteOffer = async (req, res) => {
-  const offerId = req.body.offerId;
+  const offerId = req.query.id;
   try {
     const offer = await Offer.findById(offerId);
     if (!offer) {
-      return req
+      return res
         .status(404)
         .json({ message: "there is no offer with this id" });
     }
@@ -55,11 +51,16 @@ const deleteOffer = async (req, res) => {
     if (offer.products && offer.products.length > 0) {
       await Promise.all(
         offer.products.map(async (productId) => {
-          await Product.findByIdAndUpdate(productId, { offerId: offerId });
+          await Product.findByIdAndUpdate(productId, {
+            $set: { offerId: null },
+          }, {
+            condition: { offerId: offerId }
+          });
         })
       );
     }
-    await Offer.findOneAndDelete(offerId);
+    
+    await Offer.findByIdAndDelete(offerId);
     return res.status(200).json({ message: "offer deleted succ" });
   } catch (error) {
     console.log(error);
@@ -92,20 +93,37 @@ const getOffer = async (req, res) => {
 };
 
 const editOffer = async (req, res) => {
-  const { offerId, discountRate, startDate, endDate } = req.body;
+  const { id, discountRate, startDate, endDate, products } = req.body;
+
   try {
-    await Offer.findByIdAndUpdate(offerId, {
+    // Update offer information
+    const updatedOffer = await Offer.findByIdAndUpdate(id, {
       discountRate,
       startDate,
       endDate,
+      products
     });
-    const updatedOffer = await Offer.findById(offerId);
-    res
-      .status(200)
-      .json({ message: "Offer Info edited succ", data: updatedOffer });
+
+    if (!updatedOffer) {
+      return res.status(404).json({ message: "Offer not found" });
+    }
+
+    // Update associated products
+    if (products && products.length > 0) {
+      const productUpdatePromises = products.map((productId) => {
+        return Product.findByIdAndUpdate(productId, { offerId: updatedOffer._id });
+      });
+
+      await Promise.all(productUpdatePromises);
+    }
+
+    return res.status(200).json({
+      message: "Offer info edited successfully",
+      data: updatedOffer
+    });
   } catch (error) {
     console.log(error);
-    return res.status(500).json(error);
+    return res.status(500).json({ message: "Internal Server Error" });
   }
 };
 
