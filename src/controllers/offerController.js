@@ -25,8 +25,8 @@ const addOffer = async (req, res) => {
     await Promise.all(
       products.map(async (product) => {
         if (product) {
-          await Product.findByIdAndUpdate(product._id, { offerId: addedOffer._id });
-          await Offer.findByIdAndUpdate(addedOffer._id, { $push: { products: product._id } });
+          await Product.findByIdAndUpdate(product, { offerId: addedOffer._id });
+          await Offer.findByIdAndUpdate(addedOffer._id, { $push: { products: product } });
         }
       })
     );
