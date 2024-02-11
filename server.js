@@ -21,7 +21,7 @@ app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 app.use(
   cors({
-    origin: "*",
+    origin: "https://equilibre-frontend.vercel.app",
     credentials: true,
     optionsSuccessStatus: 200,
   })
